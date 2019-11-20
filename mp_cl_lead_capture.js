@@ -6,8 +6,8 @@
  *
  * Description: Lead Capture - Client     
  * 
- * @Last Modified by:   ankith.ravindran
- * @Last Modified time: 2019-06-28 10:24:34
+ * @Last Modified by:   Ankith
+ * @Last Modified time: 2019-11-21 10:22:37
  *
  */
 
@@ -376,6 +376,22 @@ function validate(status) {
     //     alertMessage += 'Please Enter either Account Email or Day-To-Day Email</br>';
     //     return_value = false;
     // }
+
+    if (!isNullorEmpty(account_email)) {
+        var email_test = /.+@.+\..+/;
+        if (email_test.test(account_email) === false) {
+            alertMessage += 'Please check Account Email </br>';
+            return_value = false;
+        }
+    }
+
+    if (!isNullorEmpty(daytodayemail)) {
+        var email_test = /.+@.+\..+/;
+        if (email_test.test(daytodayemail) === false) {
+            alertMessage += 'Please check Day-To-Day Email</br>';
+            return_value = false;
+        }
+    }
 
     // if (isNullorEmpty(account_phone) && isNullorEmpty(daytodayphone)) {
     //     alertMessage += 'Please Enter either Account Phone or Day-To-Day Phone</br>';
