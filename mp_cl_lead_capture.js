@@ -7,7 +7,7 @@
  * Description: Lead Capture - Client     
  * 
  * @Last Modified by:   Ankith
- * @Last Modified time: 2019-11-21 10:22:37
+ * @Last Modified time: 2019-11-21 16:33:06
  *
  */
 
@@ -47,6 +47,9 @@ function showAlert(message) {
     $('#alert').show();
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0;
+     setTimeout(function() {
+        $("#alert .close").trigger('click');
+    }, 100000);
     // $(window).scrollTop($('#alert').offset().top);
 }
 

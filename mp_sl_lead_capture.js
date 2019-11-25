@@ -6,8 +6,8 @@
  *
  * Description: Lead Capture         
  * 
- * @Last Modified by:   ankith.ravindran
- * @Last Modified time: 2019-06-28 10:24:31
+ * @Last Modified by:   Ankith
+ * @Last Modified time: 2019-11-22 10:58:06
  *
  */
 
@@ -305,6 +305,10 @@ function leadForm(request, response) {
         var status_id = request.getParameter('status_id');
         var customer_id = parseInt(request.getParameter('customer_id'));
 
+        var customer_record = nlapiLoadRecord('customer', customer_id);
+        var entity_id = customer_record.getFieldValue('entityid');
+        var customer_name = customer_record.getFieldValue('companyname');
+
         if (status_id == '57') {
             var recordtoCreate = nlapiCreateRecord('customrecord_sales');
             var date2 = new Date();
@@ -313,7 +317,7 @@ function leadForm(request, response) {
 
             var cust_id_link = 'https://1048144.app.netsuite.com/app/common/entity/custjob.nl?id=' + customer_id;
 
-            body = 'New sales record has been created. \n A HOT Lead has been entered into the System. Please respond in an hour. \n Link: ' + cust_id_link;
+            body = 'New sales record has been created. \n A HOT Lead has been entered into the System. Please respond in an hour. \n Customer Name: ' + entity_id + ' ' + customer_name + '\nLink: ' + cust_id_link;
 
             var userRole = parseInt(nlapiGetContext().getRole());
 
@@ -333,7 +337,7 @@ function leadForm(request, response) {
 
             // nlapiSubmitRecord(recordtoCreate);
 
-            nlapiSendEmail(112209, ['belinda.urbani@mailplus.com.au', 'stacey.williams@mailplus.com.au'], 'Sales HOT Lead', body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'popie.popie@mailplus.com.au']);
+            nlapiSendEmail(112209, ['belinda.urbani@mailplus.com.au', 'stacey.williams@mailplus.com.au'], 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au']);
 
         }
 
