@@ -4,10 +4,10 @@
  * NSVersion    Date            			Author         
  * 1.00       	2019-03-27 10:04:32   		ankith.ravindran
  *
- * Description: Lead Capture         
+ * Description: Lead Capture / Customer Details Page        
  * 
  * @Last Modified by:   Ankith
- * @Last Modified time: 2019-11-22 10:58:06
+ * @Last Modified time: 2020-01-22 13:18:55
  *
  */
 
@@ -67,19 +67,35 @@ function leadForm(request, response) {
 
         var params = request.getParameter('custparam_params');
 
+        var script_id = null;
+        var deploy_id = null;
+
         if (!isNullorEmpty(params)) {
+            //Coming from the customer list page
             params = JSON.parse(params);
             customer_id = parseInt(params.custid);
+            script_id = params.scriptid;
+            deploy_id = params.deployid;
         } else if (!isNullorEmpty(request.getParameter('custid'))) {
             customer_id = parseInt(request.getParameter('custid'));
+            script_id = null;
+            deploy_id = null;
         }
 
 
-        var form = nlapiCreateForm('Lead Capture');
+        if (!isNullorEmpty(script_id) && !isNullorEmpty(deploy_id)) {
+            //Coming from the customer list page
+            var form = nlapiCreateForm('Customer Details');
+        } else {
+            var form = nlapiCreateForm('Lead Capture');
+        }
+
 
         if (!isNullorEmpty(customer_id)) {
 
             form.addField('customer_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(customer_id);
+            form.addField('script_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(script_id);
+            form.addField('deploy_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(deploy_id);
 
             var customer_record = nlapiLoadRecord('customer', customer_id);
 
@@ -129,6 +145,58 @@ function leadForm(request, response) {
             pmpo_price = customer_record.getFieldValue('custentity_pmpo_service_price');
             pmpo_time = customer_record.getFieldValue('custentity_pmpo_service_time');
 
+            //MPEX SECTION
+            min_dl = customer_record.getFieldValue('custentity_mpex_dl_float');
+            min_b4 = customer_record.getFieldValue('custentity_mpex_b4_float');
+            min_1kg = customer_record.getFieldValue('custentity_mpex_1kg_float');
+            min_c5 = customer_record.getFieldValue('custentity_mpex_c5_float');
+            min_3kg = customer_record.getFieldValue('custentity_mpex_3kg_float');
+            min_5kg = customer_record.getFieldValue('custentity_mpex_5kg_float');
+            total_1kg = customer_record.getFieldValue('custentity_mpen');
+            total_3kg = customer_record.getFieldValue('custentity_mpet');
+            total_5kg = customer_record.getFieldValue('custentity_mpef');
+            total_b4 = customer_record.getFieldValue('custentity_mpeb');
+            total_c5 = customer_record.getFieldValue('custentity_mpec');
+            total_dl = customer_record.getFieldValue('custentity_mped');
+
+            if (isNullorEmpty(min_dl)) {
+                min_dl = 0
+            }
+            if (isNullorEmpty(min_b4)) {
+                min_b4 = 0
+            }
+            if (isNullorEmpty(min_c5)) {
+                min_c5 = 0
+            }
+            if (isNullorEmpty(min_1kg)) {
+                min_1kg = 0
+            }
+            if (isNullorEmpty(min_3kg)) {
+                min_3kg = 0
+            }
+            if (isNullorEmpty(min_5kg)) {
+                min_5kg = 0
+            }
+
+            if (isNullorEmpty(total_dl)) {
+                total_dl = 0
+            }
+            if (isNullorEmpty(total_b4)) {
+                total_b4 = 0
+            }
+            if (isNullorEmpty(total_c5)) {
+                total_c5 = 0
+            }
+            if (isNullorEmpty(total_1kg)) {
+                total_1kg = 0
+            }
+            if (isNullorEmpty(total_3kg)) {
+                total_3kg = 0
+            }
+            if (isNullorEmpty(total_5kg)) {
+                total_5kg = 0
+            }
+
             if (multisite == 'T') {
                 multisite = 1;
             } else {
@@ -160,6 +228,17 @@ function leadForm(request, response) {
             savedNoteSearch.addFilters(newFilters);
 
             var resultSet_note = savedNoteSearch.runSearch();
+
+            if (role != 1000) {
+                var savedAPTotal = nlapiLoadSearch('customrecord_ap_stock_line_item', 'customsearch3216');
+                var newFilters = new Array();
+
+                newFilters[newFilters.length] = new nlobjSearchFilter('custrecord_ap_order_customer', 'CUSTRECORD_AP_PRODUCT_ORDER', 'is', customer_id);
+
+                savedAPTotal.addFilters(newFilters);
+
+                var resultSetAPTotal = savedAPTotal.runSearch();
+            }
 
 
             /**
@@ -250,17 +329,23 @@ function leadForm(request, response) {
         //Address and Contacts Details
         inlineHtml += addressContactsSection(resultSetAddresses, resultSetContacts);
 
+       
         if (!isNullorEmpty(serviceAddressResult)) {
             if (serviceAddressResult.length > 0) {
                 inlineHtml += '<div class="tabs" style="font-size: xx-small;"><ul class="nav nav-tabs nav-justified" style="padding-top: 3%;">';
 
                 var tab_content = '';
-                inlineHtml += '<li role="presentation" class="active"><a href="#services">SERVICES / PRICING NOTES</a></li>';
-                inlineHtml += '<li role="presentation" class=""><a href="#survey">ADDITIONAL INFORMATION</a></li>';
+                inlineHtml += '<li role="presentation" class="active"><a href="#services"><b>SERVICES / PRICING NOTES</b></a></li>';
+                inlineHtml += '<li role="presentation" class=""><a href="#survey"><b>ADDITIONAL INFORMATION</b></a></li>';
+                //If User Role is not Franchisee
                 if (role != 1000) {
+                    //Customer status is Signed or Free Trial
+                    if (customer_status_id == 13 || customer_status_id == 32) {
+                        inlineHtml += '<li role="presentation" class=""><a href="#mpex"><b>MPEX</b></a></li>';
+                        inlineHtml += '<li role="presentation" class=""><a href="#ap"><b>AP REVENUE</b></a></li>';
+                    }
 
-
-                    inlineHtml += '<li role="presentation" class=""><a href="#notes">USER NOTES</a></li>';
+                    inlineHtml += '<li role="presentation" class=""><a href="#notes"><b>USER NOTES</b></a></li>';
                 }
                 inlineHtml += '</ul>';
 
@@ -273,6 +358,22 @@ function leadForm(request, response) {
                 //Survey Questions
                 tab_content += surveyInfo(ap_mail_parcel, ap_outlet, lpo_customer, multisite, website, zee_visit_notes, zee_visit, ap_mail_parcel, ap_outlet, lpo_customer, using_express_post, using_local_couriers, using_po_box, bank_visit, classify_lead);
                 tab_content += '</div>';
+                //If User Role is not Franchisee
+                if (role != 1000) {
+                    //Customer status is Signed or Free Trial
+                    if (customer_status_id == 13 || customer_status_id == 32) {
+
+                        //For the MPEX Tab
+                        tab_content += '<div role="tabpanel" class="tab-pane" id="mpex">';
+                        tab_content += mpexTab(min_c5, min_dl, min_b4, min_1kg, min_3kg, min_5kg, total_b4, total_c5, total_dl, total_1kg, total_3kg, total_5kg);
+                        tab_content += '</div>';
+
+                        //For the AP Tab
+                        tab_content += '<div role="tabpanel" class="tab-pane" id="ap">';
+                        tab_content += apTotol(resultSetAPTotal);
+                        tab_content += '</div>';
+                    }
+                }
 
                 if (role != 1000) {
                     tab_content += '<div role="tabpanel" class="tab-pane" id="notes">';
@@ -290,7 +391,6 @@ function leadForm(request, response) {
         }
 
 
-
         form.addField('preview_table', 'inlinehtml', '').setLayoutType('outsidebelow', 'startrow').setDefaultValue(inlineHtml);
         if (!isNullorEmpty(serviceAddressResult)) {
             if (serviceAddressResult.length > 0) {
@@ -303,6 +403,8 @@ function leadForm(request, response) {
     } else {
 
         var status_id = request.getParameter('status_id');
+        var script_id = request.getParameter('script_id');
+        var deploy_id = request.getParameter('deploy_id');
         var customer_id = parseInt(request.getParameter('customer_id'));
 
         var customer_record = nlapiLoadRecord('customer', customer_id);
@@ -342,8 +444,12 @@ function leadForm(request, response) {
         }
 
 
-
-        nlapiSetRedirectURL('SUITELET', 'customscript_sl_lead_capture', 'customdeploy_sl_lead_capture', null, null);
+        if(!isNullorEmpty(script_id) && !isNullorEmpty(deploy_id)){
+            nlapiSetRedirectURL('SUITELET', 'customscript_sl_customer_list', 'customdeploy_sl_customer_list', null, null);
+        } else {
+            nlapiSetRedirectURL('SUITELET', 'customscript_sl_lead_capture', 'customdeploy_sl_lead_capture', null, null);
+        }
+        
     }
 }
 
@@ -397,12 +503,20 @@ function customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, 
     }
 
     if (role != 1000) {
-        inlineQty += '<div class="col-xs-6 status"><div class="input-group"><span class="input-group-addon" id="status_text">STATUS <span class="mandatory">*</span></span><select id="status" class="form-control status"><option></option>';
+        inlineQty += '<div class="col-xs-6 status"><div class="input-group"><span class="input-group-addon" id="status_text">STATUS <span class="mandatory">*</span></span>';
+        if (customer_status_id == 13 || customer_status_id == 32) {
+            inlineQty += '<select id="status" class="form-control status" readonly><option></option>';
+        } else {
+            inlineQty += '<select id="status" class="form-control status"><option></option>';
+        }
+
 
         if (customer_status_id == 6) {
             inlineQty += '<option value="' + 6 + '" selected>SUSPECT - New</option>';
         } else if (customer_status_id == 57) {
             inlineQty += '<option value="' + 57 + '" selected>SUSPECT - Hot Lead</option>';
+        } else if (customer_status_id == 13 || customer_status_id == 32) {
+            inlineQty += '<option value="' + customer_status_id + '" selected >' + customer_status + '</option>';
         }
         inlineQty += '<option value="' + 6 + '" >SUSPECT - New</option>';
         inlineQty += '<option value="' + 57 + '" >SUSPECT - Hot Lead</option>';
@@ -449,7 +563,7 @@ function customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, 
 
 
     inlineQty += '</select></div></div>';
-    inlineQty += '<div class="col-xs-6 leadsource_div"><div class="input-group"><span class="input-group-addon" id="leadsource_text">LEAD SOURCE <span class="mandatory">*</span></span><select id="leadsource" class="form-control leadsource" ><option></option>';
+    inlineQty += '<div class="col-xs-6 leadsource_div"><div class="input-group"><span class="input-group-addon" id="leadsource_text">LEAD SOURCE <span class="mandatory">*</span></span>';
 
     // var campaignSearch = search.create({
     // 	type: search.Type.CAMPAIGN,
@@ -475,8 +589,9 @@ function customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, 
     // });
 
     if (role == 1000) {
-        inlineQty += '<option value="-4" selected>Franchisee Generated</option>';
+        inlineQty += '<select id="leadsource" class="form-control leadsource" readonly ><option value="-4"  selected>Franchisee Generated</option>';
     } else {
+        inlineQty += '<select id="leadsource" class="form-control leadsource" ><option></option>';
         if (lead_source == 97943) {
             inlineQty += '<option value="97943" selected>HO Generated</option>';
         } else {
@@ -531,6 +646,12 @@ function customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, 
             inlineQty += '<option value="239954" selected>Inbound - Customer Portal</option>';
         } else {
             inlineQty += '<option value="239954">Inbound - Customer Portal</option>';
+        }
+
+        if (lead_source == 241725) {
+            inlineQty += '<option value="241725" selected>MPEX Product</option>';
+        } else {
+            inlineQty += '<option value="241725">MPEX Product</option>';
         }
     }
 
@@ -649,6 +770,111 @@ function addressContactsSection(resultSetAddresses, resultSetContacts) {
     inlineQty += '<div class="col-xs-3 reviewcontacts"><input type="button" value="ADD/EDIT CONTACTS" class="form-control btn btn-primary" id="reviewcontacts" /></div>';
     inlineQty += '</div>';
     inlineQty += '</div>';
+
+    return inlineQty;
+}
+
+function apTotol(resultSetAPTotal) {
+    var inlineQty = '<div class="form-group container pricing_notes">';
+    inlineQty += '<div class="row">';
+    var count = 0;
+    resultSetAPTotal.forEachResult(function(searchResult) {
+        var apTotolValue = searchResult.getValue("custrecord_ap_order_exprevenue", "CUSTRECORD_AP_PRODUCT_ORDER", "SUM");
+        var apTotolQty = searchResult.getValue("custrecord_ap_stock_line_actual_qty", null, "SUM");
+
+        inlineQty += '<div class="col-xs-6 ap_total"><div class="input-group"><span class="input-group-addon" id="ap_total_text">TOTAL REVENUE ($)</span><input type="text" id="ap_total" class="form-control ap_total" value="' + apTotolValue + '" readonly /></div></div>';
+        inlineQty += '<div class="col-xs-6 ap_total_qty"><div class="input-group"><span class="input-group-addon" id="ap_total_qty_text">TOTAL QTY (10-Packs)</span><input type="text" id="ap_total_qty" class="form-control ap_total_qty" value="' + apTotolQty + '" readonly /></div></div>';
+
+        count++;
+        return true;
+    });
+
+    if (count == 0) {
+
+        inlineQty += '<div class="col-xs-6 ap_total"><div class="input-group"><span class="input-group-addon" id="ap_total_text">TOTAL REVENUE ($)</span><input type="text" id="ap_total" class="form-control ap_total" value="0" readonly /></div></div>';
+        inlineQty += '<div class="col-xs-6 ap_total_qty"><div class="input-group"><span class="input-group-addon" id="ap_total_qty_text">TOTAL QTY (10-Packs)</span><input type="text" id="ap_total_qty" class="form-control ap_total_qty" value="0" readonly /></div></div>';
+    }
+    inlineQty += '</div>';
+    inlineQty += '</div>';
+
+    return inlineQty;
+}
+
+function mpexTab(min_c5, min_dl, min_b4, min_1kg, min_3kg, min_5kg, total_b4, total_c5, total_dl, total_1kg, total_3kg, total_5kg) {
+
+    var inlineQty = '<div class="form-group container company_name_section">';
+    inlineQty += '<div class="row">';
+    inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">MPEX - STOCK TO BE DROPPED OFF</span></h4></div>';
+    inlineQty += '</div>';
+    inlineQty += '</div>';
+
+    inlineQty += '<div class="form-group container entityid_section">';
+    inlineQty += '<div class="row">';
+    inlineQty += '<div class="col-xs-2 drop_b4"><div class="input-group"><span class="input-group-addon" id="min_b4_text">B4 (10-Packs)</span><input id="drop_b4" class="form-control drop_b4"  value=""  /></div></div>';
+    inlineQty += '<div class="col-xs-2 drop_c5"><div class="input-group"><span class="input-group-addon" id="drop_c5_text">C5 (10-Packs)</span><input id="drop_c5" class="form-control drop_c5"  value=""  /></div></div>';
+    inlineQty += '<div class="col-xs-2 drop_dl"><div class="input-group"><span class="input-group-addon" id="drop_dl_text">DL (10-Packs)</span><input id="drop_dl" class="form-control drop_dl"  value=""  /></div></div>';
+    inlineQty += '<div class="col-xs-2 drop_1kg"><div class="input-group"><span class="input-group-addon" id="drop_1kg_text">1Kg (10-Packs)</span><input id="drop_1kg" class="form-control drop_1kg"  value=""  /></div></div>';
+    inlineQty += '<div class="col-xs-2 drop_3kg"><div class="input-group"><span class="input-group-addon" id="drop_3kg_text">3Kg (10-Packs)</span><input id="drop_3kg" class="form-control drop_3kg"  value="" /></div></div>';
+    inlineQty += '<div class="col-xs-2 drop_5kg"><div class="input-group"><span class="input-group-addon" id="drop_5kg_text">B4 (10-Packs)</span><input id="drop_5kg" class="form-control drop_5kg"  value=""  /></div></div>';
+    inlineQty += '</div>';
+    inlineQty += '</div>';
+
+    inlineQty += '<div class="form-group container dropoffdate_section">';
+    inlineQty += '<div class="row">';
+    inlineQty += '<div class="col-xs-4 "></div>';
+    inlineQty += '<div class="col-xs-4 dropoffdate"><div class="input-group"><span class="input-group-addon" id="dropoffdate_text">DROP OFF DATE</span><input id="dropoffdate" class="form-control dropoffdate"  value="" type="date" /></div></div>';
+    inlineQty += '<div class="col-xs-4 "></div>';
+    inlineQty += '</div>';
+    inlineQty += '</div>';
+
+    inlineQty += '<div class="form-group container sendemail_section">';
+    inlineQty += '<div class="row">';
+    inlineQty += '<div class="col-xs-4 "></div>';
+    inlineQty += '<div class="col-xs-4 sendemail"><input type="button" value="NOTIFY FRANCHISEE" class="form-control btn btn-primary" id="sendemail" style="background-color: #008657;"/></div>';
+    inlineQty += '<div class="col-xs-4 "></div>';
+    inlineQty += '</div>';
+    inlineQty += '</div>';
+
+
+
+
+    inlineQty += '<div class="form-group container company_name_section">';
+    inlineQty += '<div class="row">';
+    inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">MPEX - MIN STOCK REQUIRED</span></h4></div>';
+    inlineQty += '</div>';
+    inlineQty += '</div>';
+
+    inlineQty += '<div class="form-group container entityid_section">';
+    inlineQty += '<div class="row">';
+    inlineQty += '<div class="col-xs-2 min_b4"><div class="input-group"><span class="input-group-addon" id="min_b4_text">B4 (Pieces)</span><input id="min_b4" class="form-control min_b4"  value="' + min_b4 + '" data-oldvalue="' + min_b4 + '" /></div></div>';
+    inlineQty += '<div class="col-xs-2 min_c5"><div class="input-group"><span class="input-group-addon" id="min_c5_text">C5 (Pieces)</span><input id="min_c5" class="form-control min_c5"  value="' + min_c5 + '" data-oldvalue="' + min_b4 + '" /></div></div>';
+    inlineQty += '<div class="col-xs-2 min_dl"><div class="input-group"><span class="input-group-addon" id="min_dl_text">DL (Pieces)</span><input id="min_dl" class="form-control min_dl"  value="' + min_dl + '" data-oldvalue="' + min_dl + '" /></div></div>';
+    inlineQty += '<div class="col-xs-2 min_1kg"><div class="input-group"><span class="input-group-addon" id="min_1kg_text">1Kg (Pieces)</span><input id="min_1kg" class="form-control min_1kg"  value="' + min_1kg + '" data-oldvalue="' + min_1kg + '" /></div></div>';
+    inlineQty += '<div class="col-xs-2 min_3kg"><div class="input-group"><span class="input-group-addon" id="min_3kg_text">3Kg (Pieces)</span><input id="min_3kg" class="form-control min_3kg"  value="' + min_3kg + '" data-oldvalue="' + min_3kg + '" /></div></div>';
+    inlineQty += '<div class="col-xs-2 min_5kg"><div class="input-group"><span class="input-group-addon" id="min_5kg_text">B4 (Pieces)</span><input id="min_5kg" class="form-control min_5kg"  value="' + min_5kg + '" data-oldvalue="' + min_5kg + '" /></div></div>';
+    inlineQty += '</div>';
+    inlineQty += '</div>';
+
+
+    inlineQty += '<div class="form-group container company_name_section">';
+    inlineQty += '<div class="row">';
+    inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">MPEX - STOCK AT CUSTOMER</span></h4></div>';
+    inlineQty += '</div>';
+    inlineQty += '</div>';
+
+    inlineQty += '<div class="form-group container entityid_section">';
+    inlineQty += '<div class="row">';
+
+    inlineQty += '<div class="col-xs-2 total_b4"><div class="input-group"><span class="input-group-addon" id="min_b4_text">B4 (Pieces) </span><input id="total_b4" class="form-control total_b4" readonly value="' + total_b4 + '" data-oldvalue="' + total_b4 + '" /></div></div>';
+    inlineQty += '<div class="col-xs-2 total_c5"><div class="input-group"><span class="input-group-addon" id="total_c5_text">C5 (Pieces)</span><input id="total_c5" class="form-control total_c5" readonly value="' + total_c5 + '" data-oldvalue="' + total_b4 + '" /></div></div>';
+    inlineQty += '<div class="col-xs-2 total_dl"><div class="input-group"><span class="input-group-addon" id="total_dl_text">DL (Pieces)</span><input id="total_dl" class="form-control total_dl"readonly  value="' + total_dl + '" data-oldvalue="' + total_dl + '" /></div></div>';
+    inlineQty += '<div class="col-xs-2 total_1kg"><div class="input-group"><span class="input-group-addon" id="total_1kg_text">1Kg (Pieces) </span><input id="total_1kg" class="form-control total_1kg" readonly value="' + total_1kg + '" data-oldvalue="' + total_1kg + '" /></div></div>';
+    inlineQty += '<div class="col-xs-2 total_3kg"><div class="input-group"><span class="input-group-addon" id="total_3kg_text">3Kg (Pieces) </span><input id="total_3kg" class="form-control total_3kg" readonly value="' + total_3kg + '" data-oldvalue="' + total_3kg + '" /></div></div>';
+    inlineQty += '<div class="col-xs-2 total_5kg"><div class="input-group"><span class="input-group-addon" id="total_5kg_text">B4 (Pieces)</span><input id="total_5kg" class="form-control total_5kg" readonly value="' + total_5kg + '" data-oldvalue="' + total_5kg + '" /></div></div>';
+    inlineQty += '</div>';
+    inlineQty += '</div>';
+
+
 
     return inlineQty;
 }
