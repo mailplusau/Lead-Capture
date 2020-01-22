@@ -4,10 +4,10 @@
  * NSVersion    Date                        Author         
  * 1.00         2019-03-27 13:47:56         ankith.ravindran
  *
- * Description: Lead Capture - Client     
+ * Description: Lead Capture /Customer Details - Client     
  * 
  * @Last Modified by:   Ankith
- * @Last Modified time: 2019-11-21 16:33:06
+ * @Last Modified time: 2020-01-22 13:19:00
  *
  */
 
@@ -31,6 +31,7 @@ if (role == 1000) {
 
 var customer_id = null;
 var type = null;
+var cust_inactive = false;
 
 function pageInit() {
 
@@ -39,6 +40,10 @@ function pageInit() {
     $('.customer_section').hide();
 
     customer_id = $('#customer_id').val();
+
+    if (!isNullorEmpty(nlapiGetFieldValue('script_id')) && !isNullorEmpty(nlapiGetFieldValue('deploy_id'))) {
+        cust_inactive = true;
+    }
 }
 
 function showAlert(message) {
@@ -47,7 +52,7 @@ function showAlert(message) {
     $('#alert').show();
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0;
-     setTimeout(function() {
+    setTimeout(function() {
         $("#alert .close").trigger('click');
     }, 100000);
     // $(window).scrollTop($('#alert').offset().top);
@@ -193,6 +198,36 @@ $(document).on('click', '.createservicechg', function(event) {
 
 });
 
+$(document).on('click', '#sendemail', function(event) {
+
+    var recCustomer = nlapiLoadRecord('customer', customer_id);
+    var zee_id = recCustomer.getFieldValue('partner');
+
+    var zee_record = nlapiLoadRecord('partner', zee_id);
+    var email = zee_record.getFieldValue('email');
+
+    var dropoff_date = $('#dropoffdate').val()
+
+    var emailSubject = 'MPEX DROP OFF - ' + recCustomer.getFieldValue('entityid') + ' ' + recCustomer.getFieldValue('companyname');
+    var emailBody = 'Customer Name: ' + recCustomer.getFieldValue('entityid') + ' ' + recCustomer.getFieldValue('companyname');
+    emailBody += '</br>Please drop-off the following 10-packs on ' + dropoff_date + ': </br>';
+    emailBody += 'B4: ' + $('#drop_b4').val() + ' (10-Packs)</br>';
+    emailBody += 'C5: ' + $('#drop_c5').val() + ' (10-Packs)</br>';
+    emailBody += 'DL: ' + $('#drop_dl').val() + ' (10-Packs)</br>';
+    emailBody += '1KG: ' + $('#drop_1kg').val() + ' (10-Packs)</br>';
+    emailBody += '3KG: ' + $('#drop_3kg').val() + ' (10-Packs)</br>';
+    emailBody += '5KG: ' + $('#drop_5kg').val() + ' (10-Packs)</br>';
+
+    console.log(email)
+    console.log(emailSubject)
+    console.log(emailBody)
+    nlapiSendEmail(112209, email, emailSubject, emailBody, null);
+
+    var url = baseURL + "/app/site/hosting/scriptlet.nl?script=925&deploy=1";
+    window.location.href = url;
+
+});
+
 
 $(document).on('click', '#reviewcontacts', function(event) {
 
@@ -211,6 +246,8 @@ $(document).on('click', '#reviewcontacts', function(event) {
         id: 'customscript_sl_lead_capture',
         deploy: 'customdeploy_sl_lead_capture',
         callcenter: null,
+        scriptid: nlapiGetFieldValue('script_id'),
+        deployid: nlapiGetFieldValue('deploy_id'),
         type: 'create'
     };
     params = JSON.stringify(params);
@@ -237,6 +274,8 @@ $(document).on('click', '#reviewaddress', function(event) {
         id: 'customscript_sl_lead_capture',
         deploy: 'customdeploy_sl_lead_capture',
         callcenter: null,
+        scriptid: nlapiGetFieldValue('script_id'),
+        deployid: nlapiGetFieldValue('deploy_id'),
         type: 'create'
     };
     params = JSON.stringify(params);
@@ -304,7 +343,7 @@ function saveRecord(context) {
         }
     }
 
-
+    cust_inactive = true;
     customer_id = createUpdateCustomer(customer_id);
 
     return true;
@@ -443,6 +482,10 @@ function createUpdateCustomer(customer_id, update_status) {
 
         customerRecord.setFieldValue('entitystatus', $('#status option:selected').val());
         customerRecord.setFieldValue('custentity_date_lead_entered', getDate());
+        if (cust_inactive == true) {
+            customerRecord.setFieldValue('isinactive', 'F');
+
+        }
 
         if ($('#status option:selected').val() == 57) {
             customerRecord.setFieldValue('custentity_hotleads', 'T');
@@ -486,11 +529,33 @@ function createUpdateCustomer(customer_id, update_status) {
         update_required = true;
     }
 
+    if ($('#min_b4').val() != $('#min_b4').attr('data-oldvalue')) {
+        update_required = true;
+    }
+    if ($('#min_c5').val() != $('#min_c5').attr('data-oldvalue')) {
+        update_required = true;
+    }
+    if ($('#min_dl').val() != $('#min_dl').attr('data-oldvalue')) {
+        update_required = true;
+    }
+    if ($('#min_1kg').val() != $('#min_1kg').attr('data-oldvalue')) {
+        update_required = true;
+    }
+    if ($('#min_3kg').val() != $('#min_3kg').attr('data-oldvalue')) {
+        update_required = true;
+    }
+    if ($('#min_5kg').val() != $('#min_5kg').attr('data-oldvalue')) {
+        update_required = true;
+    }
+
 
 
     if (update_required == true) {
 
         customerRecord.setFieldValue('companyname', $('#company_name').val());
+        if (role == 1000) {
+            customerRecord.setFieldValue('isinactive', 'T');
+        }
 
         customerRecord.setFieldValue('vatregnumber', $('#abn').val());
 
@@ -498,7 +563,7 @@ function createUpdateCustomer(customer_id, update_status) {
         console.log(ctx.getUser());
 
         if (role == 1000) {
-            customerRecord.setFieldValue('partner', ctx.getUser());
+            // customerRecord.setFieldValue('partner', ctx.getUser());
         } else {
             customerRecord.setFieldValue('partner', $('#zee option:selected').val());
             customerRecord.setFieldValue('custentity_lead_entered_by', ctx.getUser());
@@ -560,6 +625,12 @@ function createUpdateCustomer(customer_id, update_status) {
         customerRecord.setFieldValue('custentity_ampo_service_time', $('#ampo_time option:selected').val());
         customerRecord.setFieldValue('custentity_pmpo_service_price', $('#pmpo_price').val());
         customerRecord.setFieldValue('custentity_pmpo_service_time', $('#pmpo_time option:selected').val());
+        customerRecord.setFieldValue('custentity_mpex_dl_float', $('#min_b4').val());
+        customerRecord.setFieldValue('custentity_mpex_b4_float', $('#min_c5').val());
+        customerRecord.setFieldValue('custentity_mpex_1kg_float', $('#min_dl').val());
+        customerRecord.setFieldValue('custentity_mpex_c5_float', $('#min_1kg').val());
+        customerRecord.setFieldValue('custentity_mpex_3kg_float', $('#min_3kg').val());
+        customerRecord.setFieldValue('custentity_mpex_5kg_float', $('#min_5kg').val());
 
         var customerRecordId = nlapiSubmitRecord(customerRecord);
 
