@@ -7,7 +7,7 @@
  * Description: Lead Capture /Customer Details - Client     
  * 
  * @Last Modified by:   Ankith
- * @Last Modified time: 2020-01-22 13:19:00
+ * @Last Modified time: 2020-02-20 10:27:24
  *
  */
 
@@ -221,10 +221,23 @@ $(document).on('click', '#sendemail', function(event) {
     console.log(email)
     console.log(emailSubject)
     console.log(emailBody)
-    nlapiSendEmail(112209, email, emailSubject, emailBody, null);
+    nlapiSendEmail(112209, email, emailSubject, emailBody, ['ankith.ravindran@mailplus.com.au']);
 
-    var url = baseURL + "/app/site/hosting/scriptlet.nl?script=925&deploy=1";
-    window.location.href = url;
+    recCustomer.setFieldValue('custentity_mpex_drop_notified', 1);
+    var date_split = dropoff_date.split('-');
+    console.log(date_split);
+    recCustomer.setFieldValue('custentity_mpex_drop_date', date_split[2] + '/' + date_split[1] + '/' + date_split[0]);
+    nlapiSubmitRecord(recCustomer);
+
+    $('#sendemail').val('FRANCHISEE NOTIFIED');
+    $('#sendemail').removeAttr('style');
+
+    // var button = $("#sendemail"),
+    //     text = (button.text() == 'NOTIFY FRANCHISEE') ? 'FRANCHISEE NOTIFIED' : 'NOTIFY FRANCHISEE';
+    // button.text(text).toggleClass('btn-success');
+
+    // var url = baseURL + "/app/site/hosting/scriptlet.nl?script=925&deploy=1";
+    // window.location.href = url;
 
 });
 
@@ -283,6 +296,42 @@ $(document).on('click', '#reviewaddress', function(event) {
     window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
 
 });
+
+function onclick_SendEmail() {
+    var result = validate();
+    if (result == false) {
+        return false;
+    }
+    customer_id = createUpdateCustomer(customer_id);
+    var params = {
+        custid: customer_id,
+        sales_record_id: null,
+        id: 'customscript_sl_lead_capture',
+        deploy: 'customdeploy_sl_lead_capture'
+    };
+    params = JSON.stringify(params);
+    var upload_url = baseURL + nlapiResolveURL('suitelet', 'customscript_sl_send_email_module', 'customdeploy_sl_send_email_module') + '&params=' + params;
+    window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
+}
+
+function onclick_InviteEmail() {
+    var result = validate();
+    if (result == false) {
+        return false;
+    }
+    customer_id = createUpdateCustomer(customer_id);
+    var params = {
+        custid: customer_id,
+        sales_record_id: null,
+        invitetoportal: 'T',
+        id: 'customscript_sl_lead_capture',
+        deploy: 'customdeploy_sl_lead_capture'
+    };
+    params = JSON.stringify(params);
+    var upload_url = baseURL + nlapiResolveURL('suitelet', 'customscript_sl_send_email_module', 'customdeploy_sl_send_email_module') + '&params=' + params;
+    window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
+}
+
 
 $(document).on('click', '#create_note', function(event) {
 
