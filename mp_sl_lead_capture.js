@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-02-20 10:27:26
+     * @Last Modified time: 2020-02-26 08:52:18
      *
      */
 
@@ -231,14 +231,14 @@
                 var resultSet_note = savedNoteSearch.runSearch();
 
                 if (role != 1000) {
-                    var savedAPTotal = nlapiLoadSearch('customrecord_ap_stock_line_item', 'customsearch3216');
-                    var newFilters = new Array();
+                    // var savedAPTotal = nlapiLoadSearch('customrecord_ap_stock_line_item', 'customsearch3216');
+                    // var newFilters = new Array();
 
-                    newFilters[newFilters.length] = new nlobjSearchFilter('custrecord_ap_order_customer', 'CUSTRECORD_AP_PRODUCT_ORDER', 'is', customer_id);
+                    // newFilters[newFilters.length] = new nlobjSearchFilter('custrecord_ap_order_customer', 'CUSTRECORD_AP_PRODUCT_ORDER', 'is', customer_id);
 
-                    savedAPTotal.addFilters(newFilters);
+                    // savedAPTotal.addFilters(newFilters);
 
-                    var resultSetAPTotal = savedAPTotal.runSearch();
+                    // var resultSetAPTotal = savedAPTotal.runSearch();
                 }
 
 
@@ -375,7 +375,7 @@
 
                             //For the AP Tab
                             tab_content += '<div role="tabpanel" class="tab-pane" id="ap">';
-                            tab_content += apTotol(resultSetAPTotal);
+                            // tab_content += apTotol(resultSetAPTotal);
                             tab_content += '</div>';
                         }
                     }
@@ -810,6 +810,14 @@
         inlineQty += '</div>';
         inlineQty += '</div>';
 
+        inlineQty += '<div class="form-group container contact_name_section">';
+        inlineQty += '<div class="row">';
+        inlineQty += '<div class="col-xs-4 "></div>';
+        inlineQty += '<div class="col-xs-4 contact_name"><div class="input-group"><span class="input-group-addon" id="contact_name_text">CONTACT NAME</span><input id="contact_name" class="form-control contact_name"  value="" type="text" /></div></div>';
+        inlineQty += '<div class="col-xs-4 "></div>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+
         inlineQty += '<div class="form-group container sendemail_section">';
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-3 "></div>';
@@ -822,6 +830,7 @@
         if (!isNullorEmpty(serviceContactResult) && !isNullorEmpty(serviceAddressResult)) {
             if (serviceContactResult.length > 0 && serviceAddressResult.length > 0) {
                 inlineQty += '<div class="col-xs-3 "><input type="button" id="invitetoportal" class="form-control invitetoportal btn btn-success" value="INVITE TO PORTAL" onclick="onclick_InviteEmail();" style="background-color: #fdce0e;"/></div>';
+                 inlineQty += '<div class="col-xs-3 "><input type="button" id="invitetoportal" class="form-control invitetoportal btn btn-success" value="INVITE TO PORTAL (U4)" onclick="onclick_InviteEmailU4();" style="background-color: #fdce0e;"/></div>';
             }
         }
 
