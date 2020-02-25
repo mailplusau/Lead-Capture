@@ -7,7 +7,7 @@
  * Description: Lead Capture /Customer Details - Client     
  * 
  * @Last Modified by:   Ankith
- * @Last Modified time: 2020-02-20 10:27:24
+ * @Last Modified time: 2020-02-24 11:59:50
  *
  */
 
@@ -206,11 +206,16 @@ $(document).on('click', '#sendemail', function(event) {
     var zee_record = nlapiLoadRecord('partner', zee_id);
     var email = zee_record.getFieldValue('email');
 
-    var dropoff_date = $('#dropoffdate').val()
+    var dropoff_date = $('#dropoffdate').val();
+    var contact_name = $('#contact_name').val();
 
     var emailSubject = 'MPEX DROP OFF - ' + recCustomer.getFieldValue('entityid') + ' ' + recCustomer.getFieldValue('companyname');
     var emailBody = 'Customer Name: ' + recCustomer.getFieldValue('entityid') + ' ' + recCustomer.getFieldValue('companyname');
     emailBody += '</br>Please drop-off the following 10-packs on ' + dropoff_date + ': </br>';
+    if (!isNullorEmpty(contact_name)) {
+        emailBody += '</br>Ordered By: ' + contact_name + ': </br>';
+    }
+
     emailBody += 'B4: ' + $('#drop_b4').val() + ' (10-Packs)</br>';
     emailBody += 'C5: ' + $('#drop_c5').val() + ' (10-Packs)</br>';
     emailBody += 'DL: ' + $('#drop_dl').val() + ' (10-Packs)</br>';
@@ -324,6 +329,26 @@ function onclick_InviteEmail() {
         custid: customer_id,
         sales_record_id: null,
         invitetoportal: 'T',
+        unity: null,
+        id: 'customscript_sl_lead_capture',
+        deploy: 'customdeploy_sl_lead_capture'
+    };
+    params = JSON.stringify(params);
+    var upload_url = baseURL + nlapiResolveURL('suitelet', 'customscript_sl_send_email_module', 'customdeploy_sl_send_email_module') + '&params=' + params;
+    window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
+}
+
+function onclick_InviteEmailU4() {
+    var result = validate();
+    if (result == false) {
+        return false;
+    }
+    customer_id = createUpdateCustomer(customer_id);
+    var params = {
+        custid: customer_id,
+        sales_record_id: null,
+        invitetoportal: 'T',
+        unity: 'T',
         id: 'customscript_sl_lead_capture',
         deploy: 'customdeploy_sl_lead_capture'
     };
