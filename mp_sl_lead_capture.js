@@ -14,7 +14,7 @@
 
     var baseURL = 'https://1048144.app.netsuite.com';
     if (nlapiGetContext().getEnvironment() == "SANDBOX") {
-        baseURL = 'https://system.sandbox.netsuite.com';
+        baseURL = 'https://1048144-sb3.app.netsuite.com';
     }
 
     var ctx = nlapiGetContext();
@@ -53,6 +53,7 @@
             var customer_status_id = '';
             var lead_source = '';
             var lead_source_text = '';
+            var previous_zee = 0;3
             var customer_industry = '';
             var multisite = '';
             var website = '';
@@ -135,6 +136,8 @@
                 customer_status_id = customer_record.getFieldValue('entitystatus');
                 lead_source = customer_record.getFieldValue('leadsource');
                 lead_source_text = customer_record.getFieldValue('leadsource');
+                previous_zee = customer_record.getFieldValue('custentity_previous_zee');
+                previous_zee_text = customer_record.getFieldText('custentity_previous_zee');
                 customer_industry = customer_record.getFieldValue('custentity_industry_category');
                 multisite = customer_record.getFieldValue('custentity_category_multisite');
                 pricing_notes = customer_record.getFieldValue('custentity_customer_pricing_notes');
@@ -276,8 +279,8 @@
 
             }
 
-
             var inlineHtml = '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="//code.jquery.com/jquery-1.11.0.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css"><script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script><link href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet"><script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script><link rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2060796&c=1048144&h=9ee6accfd476c9cae718&_xt=.css"/><script src="https://1048144.app.netsuite.com/core/media/media.nl?id=2060797&c=1048144&h=ef2cda20731d146b5e98&_xt=.js"></script><link type="text/css" rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2090583&c=1048144&h=a0ef6ac4e28f91203dfe&_xt=.css"><style>.mandatory{color:red;}</style>';
+
 
             inlineHtml += '<div class="container" style="padding-top: 3%;"><div id="alert" class="alert alert-danger fade in"></div>';
 
@@ -329,7 +332,7 @@
 
 
             //Customer Details
-            inlineHtml += customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, customer_industry, lead_source_text, customer_status_id);
+            inlineHtml += customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, previous_zee, customer_industry, lead_source_text, customer_status_id);
 
             //Address and Contacts Details
             inlineHtml += addressContactsSection(resultSetAddresses, resultSetContacts);
@@ -479,7 +482,7 @@
         }
     }
 
-    function customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, customer_industry, lead_source_text, customer_status_id) {
+    function customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, previous_zee, customer_industry, lead_source_text, customer_status_id) {
         var inlineQty = '<div class="form-group container company_name_section">';
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">CUSTOMER DETAILS</span></h4></div>';
@@ -640,6 +643,29 @@
 
 
         inlineQty += '</select></div></div>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+
+        inlineQty += '<div class="form-group container relocation_section hide">';
+        inlineQty += '<div class="row">';
+        inlineQty += '<div class="col-xs-6 previous_zee"><div class="input-group"><span class="input-group-addon" id="zee_text"> PREVIOUS FRANCHISEE <span/* class="mandatory"*/>*</span></span>';
+        inlineQty += '<select id="previous_zee" class="form-control zee" ><option value=0></option>';
+        resultSetZees.forEachResult(function(searchResultZees) {
+
+            zeeId = searchResultZees.getValue('internalid');
+            zeeName = searchResultZees.getValue('companyname');
+
+            if (zeeId == previous_zee) {
+                inlineQty += '<option value="' + zeeId + '" selected>' + zeeName + '</option>';
+            } else {
+                inlineQty += '<option value="' + zeeId + '">' + zeeName + '</option>';
+            }
+
+            return true;
+        });
+
+        inlineQty += '</select></div></div>';
+        inlineQty += '<div class="col-xs-6"></div>';
         inlineQty += '</div>';
         inlineQty += '</div>';
 
@@ -830,7 +856,7 @@
         if (!isNullorEmpty(serviceContactResult) && !isNullorEmpty(serviceAddressResult)) {
             if (serviceContactResult.length > 0 && serviceAddressResult.length > 0) {
                 inlineQty += '<div class="col-xs-3 "><input type="button" id="invitetoportal" class="form-control invitetoportal btn btn-success" value="INVITE TO PORTAL" onclick="onclick_InviteEmail();" style="background-color: #fdce0e;"/></div>';
-                 inlineQty += '<div class="col-xs-3 "><input type="button" id="invitetoportal" class="form-control invitetoportal btn btn-success" value="INVITE TO PORTAL (U4)" onclick="onclick_InviteEmailU4();" style="background-color: #fdce0e;"/></div>';
+                inlineQty += '<div class="col-xs-3 "><input type="button" id="invitetoportal" class="form-control invitetoportal btn btn-success" value="INVITE TO PORTAL (U4)" onclick="onclick_InviteEmailU4();" style="background-color: #fdce0e;"/></div>';
             }
         }
 
