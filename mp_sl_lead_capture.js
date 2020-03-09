@@ -53,7 +53,7 @@
             var customer_status_id = '';
             var lead_source = '';
             var lead_source_text = '';
-            var previous_zee = 0;3
+            var previous_zee = 0;
             var customer_industry = '';
             var multisite = '';
             var website = '';

@@ -46,7 +46,7 @@ function pageInit() {
         cust_inactive = true;
     }
 
-    if ($('#leadsource option:selected').val() == 202599){ //Relocation
+    if ($('#leadsource option:selected').val() == 202599) { //Relocation
         $('.relocation_section').removeClass('hide');
     }
 }
@@ -124,10 +124,9 @@ $(document).on('change', '#campaign', function(e) {
 $(document).on("change", "#leadsource", function(e) {
     var lead_source = $('#leadsource option:selected').val();
     console.log('lead_source', lead_source);
-    if (lead_source == 202599){ //Relocation
+    if (lead_source == 202599) { //Relocation
         $('.relocation_section').removeClass('hide');
-    }
-    else {
+    } else {
         $('.relocation_section').addClass('hide');
     }
 });
@@ -591,7 +590,8 @@ function createUpdateCustomer(customer_id, update_status) {
         }
 
     }
-    if ($('#previous_zee option:selected').val() != $('#previous_zee').attr('data-oldvalue')){
+    console.log('previous_zee', $('#previous_zee option:selected').val());
+    if ($('#previous_zee option:selected').val() != $('#previous_zee').attr('data-oldvalue')) {
         update_required = true;
     }
 
@@ -713,7 +713,9 @@ function createUpdateCustomer(customer_id, update_status) {
             customerRecord.setFieldValue('phone', '1300656595');
         }
         customerRecord.setFieldValue('leadsource', $('#leadsource option:selected').val());
-        customerRecord.setFieldValue('custentity_previous_zee', $('#previous_zee option:selected').val());
+        if (($('#previous_zee option:selected').val()) != 0) {
+            customerRecord.setFieldValue('custentity_previous_zee', $('#previous_zee option:selected').val());
+        }
         customerRecord.setFieldValue('custentity_customer_pricing_notes', $('#pricing_notes').val());
         customerRecord.setFieldValue('custentity_ampo_service_price', $('#ampo_price').val());
         customerRecord.setFieldValue('custentity_ampo_service_time', $('#ampo_time option:selected').val());
