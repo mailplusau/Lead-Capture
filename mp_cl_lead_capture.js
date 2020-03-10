@@ -7,7 +7,7 @@
  * Description: Lead Capture /Customer Details - Client     
  * 
  * @Last Modified by:   Ankith
- * @Last Modified time: 2020-02-24 11:59:50
+ * @Last Modified time: 2020-03-04 14:16:12
  *
  */
 
@@ -330,6 +330,7 @@ function onclick_InviteEmail() {
         sales_record_id: null,
         invitetoportal: 'T',
         unity: null,
+        sendinfo: null,
         id: 'customscript_sl_lead_capture',
         deploy: 'customdeploy_sl_lead_capture'
     };
@@ -349,6 +350,27 @@ function onclick_InviteEmailU4() {
         sales_record_id: null,
         invitetoportal: 'T',
         unity: 'T',
+        sendinfo: null,
+        id: 'customscript_sl_lead_capture',
+        deploy: 'customdeploy_sl_lead_capture'
+    };
+    params = JSON.stringify(params);
+    var upload_url = baseURL + nlapiResolveURL('suitelet', 'customscript_sl_send_email_module', 'customdeploy_sl_send_email_module') + '&params=' + params;
+    window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
+}
+
+function onclick_SendInfo() {
+    var result = validate();
+    if (result == false) {
+        return false;
+    }
+    customer_id = createUpdateCustomer(customer_id);
+    var params = {
+        custid: customer_id,
+        sales_record_id: null,
+        invitetoportal: 'T',
+        unity: 'T',
+        sendinfo: 'T',
         id: 'customscript_sl_lead_capture',
         deploy: 'customdeploy_sl_lead_capture'
     };
@@ -369,14 +391,15 @@ $(document).on('click', '#create_note', function(event) {
     //     createUserNote(customer_id);
     // }
 
-
+    var mpex_drop_off = nlapiGetFieldValue('mpex_drop_off');
 
     var params2 = {
         custid: customer_id,
         sales_record_id: null,
         id: 'customscript_sl_lead_capture',
         deploy: 'customdeploy_sl_lead_capture',
-        type: 'create'
+        type: 'create',
+        mpex: mpex_drop_off
     };
     params2 = JSON.stringify(params2);
     var upload_url = baseURL + nlapiResolveURL('suitelet', 'customscript_sl_create_user_note', 'customdeploy_sl_create_user_note') + '&params=' + params2;
@@ -555,7 +578,9 @@ function createUpdateCustomer(customer_id, update_status) {
         var customerRecord = nlapiLoadRecord('customer', customer_id);
 
         customerRecord.setFieldValue('entitystatus', $('#status option:selected').val());
-        customerRecord.setFieldValue('custentity_date_lead_entered', getDate());
+        if (!isNullorEmpty(nlapiGetFieldValue('customer_list'))) {
+            customerRecord.setFieldValue('custentity_date_lead_entered', getDate());
+        }
         if (cust_inactive == true) {
             customerRecord.setFieldValue('isinactive', 'F');
 
@@ -640,7 +665,9 @@ function createUpdateCustomer(customer_id, update_status) {
             // customerRecord.setFieldValue('partner', ctx.getUser());
         } else {
             customerRecord.setFieldValue('partner', $('#zee option:selected').val());
-            customerRecord.setFieldValue('custentity_lead_entered_by', ctx.getUser());
+            if (!isNullorEmpty(nlapiGetFieldValue('customer_list'))) {
+                customerRecord.setFieldValue('custentity_lead_entered_by', ctx.getUser());
+            }
         }
 
         customerRecord.setFieldValue('email', $('#account_email').val());

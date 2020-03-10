@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-02-26 08:52:18
+     * @Last Modified time: 2020-03-04 14:16:07
      *
      */
 
@@ -69,6 +69,7 @@
 
             var script_id = null;
             var deploy_id = null;
+            var mpex_drop_off = null;
 
             if (!isNullorEmpty(params)) {
                 //Coming from the customer list page
@@ -76,16 +77,19 @@
                 customer_id = parseInt(params.custid);
                 script_id = params.scriptid;
                 deploy_id = params.deployid;
+                mpex_drop_off = params.mpex;
             } else if (!isNullorEmpty(request.getParameter('custid'))) {
                 customer_id = parseInt(request.getParameter('custid'));
                 script_id = null;
                 deploy_id = null;
             }
 
+            var customer_list_page = null;
 
             if (!isNullorEmpty(script_id) && !isNullorEmpty(deploy_id)) {
                 //Coming from the customer list page
                 var form = nlapiCreateForm('Customer Details');
+                customer_list_page = 'T';
             } else {
                 var form = nlapiCreateForm('Lead Capture');
             }
@@ -96,6 +100,8 @@
                 form.addField('customer_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(customer_id);
                 form.addField('script_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(script_id);
                 form.addField('deploy_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(deploy_id);
+                form.addField('mpex_drop_off', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(mpex_drop_off);
+                form.addField('customer_list', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(customer_list_page);
 
                 var customer_record = nlapiLoadRecord('customer', customer_id);
 
@@ -820,7 +826,7 @@
 
         inlineQty += '<div class="form-group container sendemail_section">';
         inlineQty += '<div class="row">';
-        inlineQty += '<div class="col-xs-3 "></div>';
+        // inlineQty += '<div class="col-xs-3 "></div>';
         if (mpex_drop_notified == 1) {
             inlineQty += '<div class="col-xs-3 sendemail"><input type="button" value="FRANCHISEE NOTIFIED" class="form-control btn" id="sendemail" style=""/></div>';
         } else {
@@ -830,11 +836,12 @@
         if (!isNullorEmpty(serviceContactResult) && !isNullorEmpty(serviceAddressResult)) {
             if (serviceContactResult.length > 0 && serviceAddressResult.length > 0) {
                 inlineQty += '<div class="col-xs-3 "><input type="button" id="invitetoportal" class="form-control invitetoportal btn btn-success" value="INVITE TO PORTAL" onclick="onclick_InviteEmail();" style="background-color: #fdce0e;"/></div>';
-                 inlineQty += '<div class="col-xs-3 "><input type="button" id="invitetoportal" class="form-control invitetoportal btn btn-success" value="INVITE TO PORTAL (U4)" onclick="onclick_InviteEmailU4();" style="background-color: #fdce0e;"/></div>';
+                inlineQty += '<div class="col-xs-3 "><input type="button" id="invitetoportal" class="form-control invitetoportal btn btn-success" value="INVITE TO PORTAL (U4)" onclick="onclick_InviteEmailU4();" style="background-color: #fdce0e;"/></div>';
+                inlineQty += '<div class="col-xs-3 "><input type="button" id="sendinfo" class="form-control sendInfo btn btn-primary" value="SEND INFO" onclick="onclick_SendInfo();" style=""/></div>';
             }
         }
 
-        inlineQty += '<div class="col-xs-3 "></div>';
+        // inlineQty += '<div class="col-xs-3 "></div>';
         inlineQty += '</div>';
         inlineQty += '</div>';
 
