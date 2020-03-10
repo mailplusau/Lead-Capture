@@ -1,20 +1,20 @@
     /**
      * Module Description
      * 
-     * NSVersion    Date            			Author         
-     * 1.00       	2019-03-27 10:04:32   		ankith.ravindran
+     * NSVersion    Date                        Author         
+     * 1.00         2019-03-27 10:04:32         ankith.ravindran
      *
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-02-26 08:52:18
+     * @Last Modified time: 2020-03-04 14:16:07
      *
      */
 
 
     var baseURL = 'https://1048144.app.netsuite.com';
     if (nlapiGetContext().getEnvironment() == "SANDBOX") {
-        baseURL = 'https://1048144-sb3.app.netsuite.com';
+        baseURL = 'https://system.sandbox.netsuite.com';
     }
 
     var ctx = nlapiGetContext();
@@ -70,6 +70,7 @@
 
             var script_id = null;
             var deploy_id = null;
+            var mpex_drop_off = null;
 
             if (!isNullorEmpty(params)) {
                 //Coming from the customer list page
@@ -77,16 +78,19 @@
                 customer_id = parseInt(params.custid);
                 script_id = params.scriptid;
                 deploy_id = params.deployid;
+                mpex_drop_off = params.mpex;
             } else if (!isNullorEmpty(request.getParameter('custid'))) {
                 customer_id = parseInt(request.getParameter('custid'));
                 script_id = null;
                 deploy_id = null;
             }
 
+            var customer_list_page = null;
 
             if (!isNullorEmpty(script_id) && !isNullorEmpty(deploy_id)) {
                 //Coming from the customer list page
                 var form = nlapiCreateForm('Customer Details');
+                customer_list_page = 'T';
             } else {
                 var form = nlapiCreateForm('Lead Capture');
             }
@@ -97,6 +101,8 @@
                 form.addField('customer_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(customer_id);
                 form.addField('script_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(script_id);
                 form.addField('deploy_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(deploy_id);
+                form.addField('mpex_drop_off', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(mpex_drop_off);
+                form.addField('customer_list', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(customer_list_page);
 
                 var customer_record = nlapiLoadRecord('customer', customer_id);
 
@@ -279,8 +285,8 @@
 
             }
 
-            var inlineHtml = '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="//code.jquery.com/jquery-1.11.0.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css"><script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script><link href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet"><script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script><link rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2060796&c=1048144&h=9ee6accfd476c9cae718&_xt=.css"/><script src="https://1048144.app.netsuite.com/core/media/media.nl?id=2060797&c=1048144&h=ef2cda20731d146b5e98&_xt=.js"></script><link type="text/css" rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2090583&c=1048144&h=a0ef6ac4e28f91203dfe&_xt=.css"><style>.mandatory{color:red;}</style>';
 
+            var inlineHtml = '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="//code.jquery.com/jquery-1.11.0.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css"><script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script><link href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet"><script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script><link rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2060796&c=1048144&h=9ee6accfd476c9cae718&_xt=.css"/><script src="https://1048144.app.netsuite.com/core/media/media.nl?id=2060797&c=1048144&h=ef2cda20731d146b5e98&_xt=.js"></script><link type="text/css" rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2090583&c=1048144&h=a0ef6ac4e28f91203dfe&_xt=.css"><style>.mandatory{color:red;}</style>';
 
             inlineHtml += '<div class="container" style="padding-top: 3%;"><div id="alert" class="alert alert-danger fade in"></div>';
 
@@ -595,26 +601,26 @@
         inlineQty += '<div class="col-xs-6 leadsource_div"><div class="input-group"><span class="input-group-addon" id="leadsource_text">LEAD SOURCE <span class="mandatory">*</span></span>';
 
         // var campaignSearch = search.create({
-        // 	type: search.Type.CAMPAIGN,
-        // 	title: 'LEAD SOURCE',
-        // 	id: 'customsearch_lead_source',
-        // 	columns: [{
-        // 		name: 'internalId'
-        // 	}, {
-        // 		name: 'title'
-        // 	}]
+        //  type: search.Type.CAMPAIGN,
+        //  title: 'LEAD SOURCE',
+        //  id: 'customsearch_lead_source',
+        //  columns: [{
+        //      name: 'internalId'
+        //  }, {
+        //      name: 'title'
+        //  }]
         // });
 
         // campaignSearch.save();
         // var campaignSearch = search.load({
-        // 	id: 'customsearch_lead_source'
+        //  id: 'customsearch_lead_source'
         // });
         // campaignSearch.run().each(function(searchResult) {
 
-        // 	var listValue = searchResult.getValue('title');
-        // 	// var listID = searchResult.getValue('internalId');
-        // 	inlineQty += '<option value="">' + listValue + '</option>';
-        // 	return true;
+        //  var listValue = searchResult.getValue('title');
+        //  // var listID = searchResult.getValue('internalId');
+        //  inlineQty += '<option value="">' + listValue + '</option>';
+        //  return true;
         // });
         // 
         var searched_lead_source = nlapiLoadSearch('campaign', 'customsearch_lead_source');
@@ -849,7 +855,7 @@
 
         inlineQty += '<div class="form-group container sendemail_section">';
         inlineQty += '<div class="row">';
-        inlineQty += '<div class="col-xs-3 "></div>';
+        // inlineQty += '<div class="col-xs-3 "></div>';
         if (mpex_drop_notified == 1) {
             inlineQty += '<div class="col-xs-3 sendemail"><input type="button" value="FRANCHISEE NOTIFIED" class="form-control btn" id="sendemail" style=""/></div>';
         } else {
@@ -860,10 +866,11 @@
             if (serviceContactResult.length > 0 && serviceAddressResult.length > 0) {
                 inlineQty += '<div class="col-xs-3 "><input type="button" id="invitetoportal" class="form-control invitetoportal btn btn-success" value="INVITE TO PORTAL" onclick="onclick_InviteEmail();" style="background-color: #fdce0e;"/></div>';
                 inlineQty += '<div class="col-xs-3 "><input type="button" id="invitetoportal" class="form-control invitetoportal btn btn-success" value="INVITE TO PORTAL (U4)" onclick="onclick_InviteEmailU4();" style="background-color: #fdce0e;"/></div>';
+                inlineQty += '<div class="col-xs-3 "><input type="button" id="sendinfo" class="form-control sendInfo btn btn-primary" value="SEND INFO" onclick="onclick_SendInfo();" style=""/></div>';
             }
         }
 
-        inlineQty += '<div class="col-xs-3 "></div>';
+        // inlineQty += '<div class="col-xs-3 "></div>';
         inlineQty += '</div>';
         inlineQty += '</div>';
 
