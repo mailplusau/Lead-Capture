@@ -646,28 +646,31 @@
         inlineQty += '</div>';
         inlineQty += '</div>';
 
-        inlineQty += '<div class="form-group container relocation_section hide">';
-        inlineQty += '<div class="row">';
-        inlineQty += '<div class="col-xs-6 previous_zee"><div class="input-group"><span class="input-group-addon" id="zee_text"> PREVIOUS FRANCHISEE <span/* class="mandatory"*/>*</span></span>';
-        inlineQty += '<select id="previous_zee" class="form-control zee" ><option value=0></option>';
-        resultSetZees.forEachResult(function(searchResultZees) {
+        if (role != 1000) {
 
-            zeeId = searchResultZees.getValue('internalid');
-            zeeName = searchResultZees.getValue('companyname');
+            inlineQty += '<div class="form-group container relocation_section hide">';
+            inlineQty += '<div class="row">';
+            inlineQty += '<div class="col-xs-6 previous_zee"><div class="input-group"><span class="input-group-addon" id="zee_text"> PREVIOUS FRANCHISEE <span/* class="mandatory"*/>*</span></span>';
+            inlineQty += '<select id="previous_zee" class="form-control previous_zee" ><option value=0></option>';
+            resultSetZees.forEachResult(function(searchResultZees) {
 
-            if (zeeId == previous_zee) {
-                inlineQty += '<option value="' + zeeId + '" selected>' + zeeName + '</option>';
-            } else {
-                inlineQty += '<option value="' + zeeId + '">' + zeeName + '</option>';
-            }
+                zeeId = searchResultZees.getValue('internalid');
+                zeeName = searchResultZees.getValue('companyname');
 
-            return true;
-        });
+                if (zeeId == previous_zee) {
+                    inlineQty += '<option value="' + zeeId + '" selected>' + zeeName + '</option>';
+                } else {
+                    inlineQty += '<option value="' + zeeId + '">' + zeeName + '</option>';
+                }
 
-        inlineQty += '</select></div></div>';
-        inlineQty += '<div class="col-xs-6"></div>';
-        inlineQty += '</div>';
-        inlineQty += '</div>';
+                return true;
+            });
+
+            inlineQty += '</select></div></div>';
+            inlineQty += '<div class="col-xs-6"></div>';
+            inlineQty += '</div>';
+            inlineQty += '</div>';
+        }
 
         inlineQty += '<div class="form-group container email_section">';
         inlineQty += '<div class="row">';

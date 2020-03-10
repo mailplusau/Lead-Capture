@@ -45,9 +45,10 @@ function pageInit() {
     if (!isNullorEmpty(nlapiGetFieldValue('script_id')) && !isNullorEmpty(nlapiGetFieldValue('deploy_id'))) {
         cust_inactive = true;
     }
-
-    if ($('#leadsource option:selected').val() == 202599) { //Relocation
-        $('.relocation_section').removeClass('hide');
+    if (role != 1000) {
+        if ($('#leadsource option:selected').val() == 202599) { //Relocation
+            $('.relocation_section').removeClass('hide');
+        }
     }
 }
 
