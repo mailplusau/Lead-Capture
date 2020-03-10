@@ -1,13 +1,13 @@
     /**
      * Module Description
      * 
-     * NSVersion    Date            			Author         
-     * 1.00       	2019-03-27 10:04:32   		ankith.ravindran
+     * NSVersion    Date                        Author         
+     * 1.00         2019-03-27 10:04:32         ankith.ravindran
      *
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-02-26 08:52:18
+     * @Last Modified time: 2020-03-04 14:16:07
      *
      */
 
@@ -53,6 +53,7 @@
             var customer_status_id = '';
             var lead_source = '';
             var lead_source_text = '';
+            var previous_zee = 0;
             var customer_industry = '';
             var multisite = '';
             var website = '';
@@ -69,6 +70,7 @@
 
             var script_id = null;
             var deploy_id = null;
+            var mpex_drop_off = null;
 
             if (!isNullorEmpty(params)) {
                 //Coming from the customer list page
@@ -76,16 +78,19 @@
                 customer_id = parseInt(params.custid);
                 script_id = params.scriptid;
                 deploy_id = params.deployid;
+                mpex_drop_off = params.mpex;
             } else if (!isNullorEmpty(request.getParameter('custid'))) {
                 customer_id = parseInt(request.getParameter('custid'));
                 script_id = null;
                 deploy_id = null;
             }
 
+            var customer_list_page = null;
 
             if (!isNullorEmpty(script_id) && !isNullorEmpty(deploy_id)) {
                 //Coming from the customer list page
                 var form = nlapiCreateForm('Customer Details');
+                customer_list_page = 'T';
             } else {
                 var form = nlapiCreateForm('Lead Capture');
             }
@@ -96,6 +101,8 @@
                 form.addField('customer_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(customer_id);
                 form.addField('script_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(script_id);
                 form.addField('deploy_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(deploy_id);
+                form.addField('mpex_drop_off', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(mpex_drop_off);
+                form.addField('customer_list', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(customer_list_page);
 
                 var customer_record = nlapiLoadRecord('customer', customer_id);
 
@@ -135,6 +142,8 @@
                 customer_status_id = customer_record.getFieldValue('entitystatus');
                 lead_source = customer_record.getFieldValue('leadsource');
                 lead_source_text = customer_record.getFieldValue('leadsource');
+                previous_zee = customer_record.getFieldValue('custentity_previous_zee');
+                previous_zee_text = customer_record.getFieldText('custentity_previous_zee');
                 customer_industry = customer_record.getFieldValue('custentity_industry_category');
                 multisite = customer_record.getFieldValue('custentity_category_multisite');
                 pricing_notes = customer_record.getFieldValue('custentity_customer_pricing_notes');
@@ -329,7 +338,7 @@
 
 
             //Customer Details
-            inlineHtml += customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, customer_industry, lead_source_text, customer_status_id);
+            inlineHtml += customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, previous_zee, customer_industry, lead_source_text, customer_status_id);
 
             //Address and Contacts Details
             inlineHtml += addressContactsSection(resultSetAddresses, resultSetContacts);
@@ -479,7 +488,7 @@
         }
     }
 
-    function customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, customer_industry, lead_source_text, customer_status_id) {
+    function customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, previous_zee, customer_industry, lead_source_text, customer_status_id) {
         var inlineQty = '<div class="form-group container company_name_section">';
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">CUSTOMER DETAILS</span></h4></div>';
@@ -592,26 +601,26 @@
         inlineQty += '<div class="col-xs-6 leadsource_div"><div class="input-group"><span class="input-group-addon" id="leadsource_text">LEAD SOURCE <span class="mandatory">*</span></span>';
 
         // var campaignSearch = search.create({
-        // 	type: search.Type.CAMPAIGN,
-        // 	title: 'LEAD SOURCE',
-        // 	id: 'customsearch_lead_source',
-        // 	columns: [{
-        // 		name: 'internalId'
-        // 	}, {
-        // 		name: 'title'
-        // 	}]
+        //  type: search.Type.CAMPAIGN,
+        //  title: 'LEAD SOURCE',
+        //  id: 'customsearch_lead_source',
+        //  columns: [{
+        //      name: 'internalId'
+        //  }, {
+        //      name: 'title'
+        //  }]
         // });
 
         // campaignSearch.save();
         // var campaignSearch = search.load({
-        // 	id: 'customsearch_lead_source'
+        //  id: 'customsearch_lead_source'
         // });
         // campaignSearch.run().each(function(searchResult) {
 
-        // 	var listValue = searchResult.getValue('title');
-        // 	// var listID = searchResult.getValue('internalId');
-        // 	inlineQty += '<option value="">' + listValue + '</option>';
-        // 	return true;
+        //  var listValue = searchResult.getValue('title');
+        //  // var listID = searchResult.getValue('internalId');
+        //  inlineQty += '<option value="">' + listValue + '</option>';
+        //  return true;
         // });
         // 
         var searched_lead_source = nlapiLoadSearch('campaign', 'customsearch_lead_source');
@@ -642,6 +651,32 @@
         inlineQty += '</select></div></div>';
         inlineQty += '</div>';
         inlineQty += '</div>';
+
+        if (role != 1000) {
+
+            inlineQty += '<div class="form-group container relocation_section hide">';
+            inlineQty += '<div class="row">';
+            inlineQty += '<div class="col-xs-6 previous_zee"><div class="input-group"><span class="input-group-addon" id="zee_text"> PREVIOUS FRANCHISEE <span/* class="mandatory"*/>*</span></span>';
+            inlineQty += '<select id="previous_zee" class="form-control previous_zee" ><option value=0></option>';
+            resultSetZees.forEachResult(function(searchResultZees) {
+
+                zeeId = searchResultZees.getValue('internalid');
+                zeeName = searchResultZees.getValue('companyname');
+
+                if (zeeId == previous_zee) {
+                    inlineQty += '<option value="' + zeeId + '" selected>' + zeeName + '</option>';
+                } else {
+                    inlineQty += '<option value="' + zeeId + '">' + zeeName + '</option>';
+                }
+
+                return true;
+            });
+
+            inlineQty += '</select></div></div>';
+            inlineQty += '<div class="col-xs-6"></div>';
+            inlineQty += '</div>';
+            inlineQty += '</div>';
+        }
 
         inlineQty += '<div class="form-group container email_section">';
         inlineQty += '<div class="row">';
@@ -820,7 +855,7 @@
 
         inlineQty += '<div class="form-group container sendemail_section">';
         inlineQty += '<div class="row">';
-        inlineQty += '<div class="col-xs-3 "></div>';
+        // inlineQty += '<div class="col-xs-3 "></div>';
         if (mpex_drop_notified == 1) {
             inlineQty += '<div class="col-xs-3 sendemail"><input type="button" value="FRANCHISEE NOTIFIED" class="form-control btn" id="sendemail" style=""/></div>';
         } else {
@@ -830,11 +865,12 @@
         if (!isNullorEmpty(serviceContactResult) && !isNullorEmpty(serviceAddressResult)) {
             if (serviceContactResult.length > 0 && serviceAddressResult.length > 0) {
                 inlineQty += '<div class="col-xs-3 "><input type="button" id="invitetoportal" class="form-control invitetoportal btn btn-success" value="INVITE TO PORTAL" onclick="onclick_InviteEmail();" style="background-color: #fdce0e;"/></div>';
-                 inlineQty += '<div class="col-xs-3 "><input type="button" id="invitetoportal" class="form-control invitetoportal btn btn-success" value="INVITE TO PORTAL (U4)" onclick="onclick_InviteEmailU4();" style="background-color: #fdce0e;"/></div>';
+                inlineQty += '<div class="col-xs-3 "><input type="button" id="invitetoportal" class="form-control invitetoportal btn btn-success" value="INVITE TO PORTAL (U4)" onclick="onclick_InviteEmailU4();" style="background-color: #fdce0e;"/></div>';
+                inlineQty += '<div class="col-xs-3 "><input type="button" id="sendinfo" class="form-control sendInfo btn btn-primary" value="SEND INFO" onclick="onclick_SendInfo();" style=""/></div>';
             }
         }
 
-        inlineQty += '<div class="col-xs-3 "></div>';
+        // inlineQty += '<div class="col-xs-3 "></div>';
         inlineQty += '</div>';
         inlineQty += '</div>';
 
