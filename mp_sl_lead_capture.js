@@ -1,8 +1,8 @@
     /**
      * Module Description
      * 
-     * NSVersion    Date            			Author         
-     * 1.00       	2019-03-27 10:04:32   		ankith.ravindran
+     * NSVersion    Date                        Author         
+     * 1.00         2019-03-27 10:04:32         ankith.ravindran
      *
      * Description: Lead Capture / Customer Details Page        
      * 
@@ -53,6 +53,7 @@
             var customer_status_id = '';
             var lead_source = '';
             var lead_source_text = '';
+            var previous_zee = 0;
             var customer_industry = '';
             var multisite = '';
             var website = '';
@@ -141,6 +142,8 @@
                 customer_status_id = customer_record.getFieldValue('entitystatus');
                 lead_source = customer_record.getFieldValue('leadsource');
                 lead_source_text = customer_record.getFieldValue('leadsource');
+                previous_zee = customer_record.getFieldValue('custentity_previous_zee');
+                previous_zee_text = customer_record.getFieldText('custentity_previous_zee');
                 customer_industry = customer_record.getFieldValue('custentity_industry_category');
                 multisite = customer_record.getFieldValue('custentity_category_multisite');
                 pricing_notes = customer_record.getFieldValue('custentity_customer_pricing_notes');
@@ -335,7 +338,7 @@
 
 
             //Customer Details
-            inlineHtml += customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, customer_industry, lead_source_text, customer_status_id);
+            inlineHtml += customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, previous_zee, customer_industry, lead_source_text, customer_status_id);
 
             //Address and Contacts Details
             inlineHtml += addressContactsSection(resultSetAddresses, resultSetContacts);
@@ -485,7 +488,7 @@
         }
     }
 
-    function customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, customer_industry, lead_source_text, customer_status_id) {
+    function customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, previous_zee, customer_industry, lead_source_text, customer_status_id) {
         var inlineQty = '<div class="form-group container company_name_section">';
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">CUSTOMER DETAILS</span></h4></div>';
@@ -598,26 +601,26 @@
         inlineQty += '<div class="col-xs-6 leadsource_div"><div class="input-group"><span class="input-group-addon" id="leadsource_text">LEAD SOURCE <span class="mandatory">*</span></span>';
 
         // var campaignSearch = search.create({
-        // 	type: search.Type.CAMPAIGN,
-        // 	title: 'LEAD SOURCE',
-        // 	id: 'customsearch_lead_source',
-        // 	columns: [{
-        // 		name: 'internalId'
-        // 	}, {
-        // 		name: 'title'
-        // 	}]
+        //  type: search.Type.CAMPAIGN,
+        //  title: 'LEAD SOURCE',
+        //  id: 'customsearch_lead_source',
+        //  columns: [{
+        //      name: 'internalId'
+        //  }, {
+        //      name: 'title'
+        //  }]
         // });
 
         // campaignSearch.save();
         // var campaignSearch = search.load({
-        // 	id: 'customsearch_lead_source'
+        //  id: 'customsearch_lead_source'
         // });
         // campaignSearch.run().each(function(searchResult) {
 
-        // 	var listValue = searchResult.getValue('title');
-        // 	// var listID = searchResult.getValue('internalId');
-        // 	inlineQty += '<option value="">' + listValue + '</option>';
-        // 	return true;
+        //  var listValue = searchResult.getValue('title');
+        //  // var listID = searchResult.getValue('internalId');
+        //  inlineQty += '<option value="">' + listValue + '</option>';
+        //  return true;
         // });
         // 
         var searched_lead_source = nlapiLoadSearch('campaign', 'customsearch_lead_source');
@@ -648,6 +651,32 @@
         inlineQty += '</select></div></div>';
         inlineQty += '</div>';
         inlineQty += '</div>';
+
+        if (role != 1000) {
+
+            inlineQty += '<div class="form-group container relocation_section hide">';
+            inlineQty += '<div class="row">';
+            inlineQty += '<div class="col-xs-6 previous_zee"><div class="input-group"><span class="input-group-addon" id="zee_text"> PREVIOUS FRANCHISEE <span/* class="mandatory"*/>*</span></span>';
+            inlineQty += '<select id="previous_zee" class="form-control previous_zee" ><option value=0></option>';
+            resultSetZees.forEachResult(function(searchResultZees) {
+
+                zeeId = searchResultZees.getValue('internalid');
+                zeeName = searchResultZees.getValue('companyname');
+
+                if (zeeId == previous_zee) {
+                    inlineQty += '<option value="' + zeeId + '" selected>' + zeeName + '</option>';
+                } else {
+                    inlineQty += '<option value="' + zeeId + '">' + zeeName + '</option>';
+                }
+
+                return true;
+            });
+
+            inlineQty += '</select></div></div>';
+            inlineQty += '<div class="col-xs-6"></div>';
+            inlineQty += '</div>';
+            inlineQty += '</div>';
+        }
 
         inlineQty += '<div class="form-group container email_section">';
         inlineQty += '<div class="row">';

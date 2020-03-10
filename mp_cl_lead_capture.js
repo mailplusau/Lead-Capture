@@ -14,7 +14,7 @@
 
 var baseURL = 'https://1048144.app.netsuite.com';
 if (nlapiGetContext().getEnvironment() == "SANDBOX") {
-    baseURL = 'https://system.sandbox.netsuite.com';
+    baseURL = 'https://1048144-sb3.app.netsuite.com';
 }
 
 var ctx = nlapiGetContext();
@@ -43,6 +43,11 @@ function pageInit() {
 
     if (!isNullorEmpty(nlapiGetFieldValue('script_id')) && !isNullorEmpty(nlapiGetFieldValue('deploy_id'))) {
         cust_inactive = true;
+    }
+    if (role != 1000) {
+        if ($('#leadsource option:selected').val() == 202599) { //Relocation
+            $('.relocation_section').removeClass('hide');
+        }
     }
 }
 
@@ -114,6 +119,17 @@ $(document).on('change', '#campaign', function(e) {
         $('.create').show();
     }
     $('.nominate').show();
+});
+
+$(document).on("change", "#leadsource", function(e) {
+    var lead_source = $('#leadsource option:selected').val();
+    console.log('lead_source', lead_source);
+    if (lead_source == 202599) { //Relocation
+        $('.relocation_section').removeClass('hide');
+    } else {
+        $('.relocation_section').addClass('hide');
+        $('#previous_zee option:selected').val(0);
+    }
 });
 
 $(document).on('click', '.createservicechg', function(event) {
@@ -600,6 +616,9 @@ function createUpdateCustomer(customer_id, update_status) {
         }
 
     }
+    if ($('#previous_zee option:selected').val() != $('#previous_zee').attr('data-oldvalue')) {
+        update_required = true;
+    }
 
     if ($('#company_name').val() != $('#company_name').attr('data-oldvalue')) {
         update_required = true;
@@ -719,6 +738,13 @@ function createUpdateCustomer(customer_id, update_status) {
             customerRecord.setFieldValue('phone', $('#daytodayphone').val());
         } else {
             customerRecord.setFieldValue('phone', '1300656595');
+        }
+        customerRecord.setFieldValue('leadsource', $('#leadsource option:selected').val());
+        if (($('#previous_zee option:selected').val()) != 0) {
+            customerRecord.setFieldValue('custentity_previous_zee', $('#previous_zee option:selected').val());
+        }
+        else {
+            customerRecord.setFieldValue('custentity_previous_zee', '');
         }
         customerRecord.setFieldValue('leadsource', $('#leadsource option:selected').val());
         customerRecord.setFieldValue('custentity_customer_pricing_notes', $('#pricing_notes').val());
