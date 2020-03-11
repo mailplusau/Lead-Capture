@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-03-04 14:16:07
+     * @Last Modified time: 2020-03-11 14:03:26
      *
      */
 
@@ -924,7 +924,7 @@
         columns[0] = new nlobjSearchColumn('name');
         columns[1] = new nlobjSearchColumn('internalId');
 
-        var yes_no_search = nlapiCreateSearch('customlist_yes_no_unsure', null, columns)
+        var yes_no_search = nlapiCreateSearch('customlist107_2', null, columns)
         var resultSetYesNo = yes_no_search.runSearch();
 
         var columns2 = new Array();
