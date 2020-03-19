@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-03-11 14:03:26
+     * @Last Modified time: 2020-03-19 14:02:12
      *
      */
 
@@ -627,7 +627,12 @@
         resultSetLeadSource = searched_lead_source.runSearch();
 
         if (role == 1000) {
-            inlineQty += '<select id="leadsource" class="form-control leadsource" readonly ><option value="-4"  selected>Franchisee Generated</option>';
+            if(zee != 696179){
+                 inlineQty += '<select id="leadsource" class="form-control leadsource" readonly ><option value="-4"  selected>Franchisee Generated</option>';
+            } else {
+                 inlineQty += '<select id="leadsource" class="form-control leadsource" readonly ><option value="242647"  selected>Field Sales - Wendie</option>';
+            }
+           
         } else {
             inlineQty += '<select id="leadsource" class="form-control leadsource" ><option></option>';
             resultSetLeadSource.forEachResult(function(searchResultLeadSource) {
@@ -833,7 +838,7 @@
         inlineQty += '<div class="col-xs-2 drop_dl"><div class="input-group"><span class="input-group-addon" id="drop_dl_text">DL (10-Packs)</span><input id="drop_dl" class="form-control drop_dl"  value="2"  /></div></div>';
         inlineQty += '<div class="col-xs-2 drop_1kg"><div class="input-group"><span class="input-group-addon" id="drop_1kg_text">1Kg (10-Packs)</span><input id="drop_1kg" class="form-control drop_1kg"  value="2"  /></div></div>';
         inlineQty += '<div class="col-xs-2 drop_3kg"><div class="input-group"><span class="input-group-addon" id="drop_3kg_text">3Kg (10-Packs)</span><input id="drop_3kg" class="form-control drop_3kg"  value="2" /></div></div>';
-        inlineQty += '<div class="col-xs-2 drop_5kg"><div class="input-group"><span class="input-group-addon" id="drop_5kg_text">B4 (10-Packs)</span><input id="drop_5kg" class="form-control drop_5kg"  value="2"  /></div></div>';
+        inlineQty += '<div class="col-xs-2 drop_5kg"><div class="input-group"><span class="input-group-addon" id="drop_5kg_text">5Kg (10-Packs)</span><input id="drop_5kg" class="form-control drop_5kg"  value="2"  /></div></div>';
         inlineQty += '</div>';
         inlineQty += '</div>';
 
@@ -934,6 +939,13 @@
         var classifyLeadsearch = nlapiCreateSearch('customlist_classify_lead', null, columns)
         var resultClassifyLead = classifyLeadsearch.runSearch();
 
+        var columns3 = new Array();
+        columns3[0] = new nlobjSearchColumn('name');
+        columns3[1] = new nlobjSearchColumn('internalId');
+
+        var usage_freq_search = nlapiCreateSearch('customlist_usage_frequency', null, columns3)
+        var resultSetUsageFreq = usage_freq_search.runSearch();
+
         var inlineQty = '<div class="form-group container multisite_section">';
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-4 multisite"><div class="input-group"><span class="input-group-addon" id="multisite_text">Multisite? </span><select id="multisite" class="form-control multisite" ><option></option>';
@@ -986,7 +998,12 @@
 
         inlineQty += '<div class="form-group container surveys">';
         inlineQty += '<div class="row">';
-        inlineQty += '<div class="col-xs-4 survey1"><div class="input-group"><span class="input-group-addon" id="survey1_text">Using AusPost for Mail & Parcel? </span><select id="survey1" class="form-control survey1"><option></option>';
+        if (zee != 696179 || (zee == 696179 && role != 1000)) {
+            inlineQty += '<div class="col-xs-4 survey1"><div class="input-group"><span class="input-group-addon" id="survey1_text">Using Mail / Parcels / Satchels Regularly? </span><select id="survey1" class="form-control survey1"><option></option>';
+
+        } else if (zee == 696179 && role == 1000) {
+            inlineQty += '<div class="col-xs-4 survey1"><div class="input-group"><span class="input-group-addon" id="survey1_text">Using Mail / Parcels / Satchels Regularly? <span class="mandatory">*</span></span><select id="survey1" class="form-control survey1" required><option></option>';
+        }
 
         resultSetYesNo.forEachResult(function(searchResult) {
 
@@ -1005,7 +1022,41 @@
         });
 
         inlineQty += '</select></div></div>';
-        inlineQty += '<div class="col-xs-4 survey2"><div class="input-group"><span class="input-group-addon" id="survey2_text">Using Express Post? </span><select id="survey2" class="form-control survey2"><option></option>';
+        if (zee != 696179 || (zee == 696179 && role != 1000)) {
+            inlineQty += '<div class="col-xs-6 survey7"><div class="input-group"><span class="input-group-addon" id="survey7_text">Frequency of Mail / Parcels / Satchels? </span><select id="survey7" class="form-control survey7"><option></option>';
+
+        } else if (zee == 696179 && role == 1000) {
+            inlineQty += '<div class="col-xs-6 survey7"><div class="input-group"><span class="input-group-addon" id="survey7_text">Frequency of Mail / Parcels / Satchels? <span class="mandatory">*</span> </span><select id="survey7" class="form-control survey7" required><option></option>';
+        }
+
+
+        resultSetUsageFreq.forEachResult(function(searchResult) {
+
+            var listValue = searchResult.getValue('name');
+            var listID = searchResult.getValue('internalId');
+            if (!isNullorEmpty(ap_mail_parcel)) {
+                if (ap_mail_parcel == listID) {
+                    inlineQty += '<option value="' + listID + '" selected>' + listValue + '</option>';
+                } else {
+                    inlineQty += '<option value="' + listID + '">' + listValue + '</option>';
+                }
+            } else {
+                inlineQty += '<option value="' + listID + '">' + listValue + '</option>';
+            }
+            return true;
+        });
+
+        inlineQty += '</select></div></div>';
+        inlineQty += '</div></div>';
+        inlineQty += '<div class="form-group container surveys_3">';
+        inlineQty += '<div class="row">';
+        if (zee != 696179 || (zee == 696179 && role != 1000)) {
+            inlineQty += '<div class="col-xs-4 survey2"><div class="input-group"><span class="input-group-addon" id="survey2_text">Using Express Post? </span><select id="survey2" class="form-control survey2"><option></option>';
+
+        } else if (zee == 696179 && role == 1000) {
+            inlineQty += '<div class="col-xs-4 survey2"><div class="input-group"><span class="input-group-addon" id="survey2_text">Using Express Post? <span class="mandatory">*</span></span><select id="survey2" class="form-control survey2" required><option></option>';
+        }
+
         resultSetYesNo.forEachResult(function(searchResult) {
 
             var listValue = searchResult.getValue('name');
@@ -1022,7 +1073,13 @@
             return true;
         });
         inlineQty += '</select></div></div>';
-        inlineQty += '<div class="col-xs-4 survey3"><div class="input-group"><span class="input-group-addon" id="survey3_text">Using Local Couriers? </span><select id="survey3" class="form-control survey3"><option></option>';
+        if (zee != 696179 || (zee == 696179 && role != 1000)) {
+            inlineQty += '<div class="col-xs-4 survey3"><div class="input-group"><span class="input-group-addon" id="survey3_text">Using Local Couriers? </span><select id="survey3" class="form-control survey3"><option></option>';
+
+        } else if (zee == 696179 && role == 1000) {
+            inlineQty += '<div class="col-xs-4 survey3"><div class="input-group"><span class="input-group-addon" id="survey3_text">Using Local Couriers? <span class="mandatory">*</span></span><select id="survey3" class="form-control survey3"><option></option>';
+        }
+
         resultSetYesNo.forEachResult(function(searchResult) {
 
             var listValue = searchResult.getValue('name');
@@ -1120,11 +1177,11 @@
         inlineQty += '<div class="form-group container ampo_section">';
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-6 ampo_price_div"><div class="input-group"><span class="input-group-addon" id="ampo_price_text">AMPO PRICE';
-        if (role == 1000) {
+        if (role == 1000 && zee != 696179) {
             inlineQty += ' <span class="mandatory">*</span>';
         }
         inlineQty += '</span><input id="ampo_price" class="form-control ampo_price" ';
-        if (role == 1000) {
+        if (role == 1000 && zee != 696179) {
             inlineQty += 'required';
         }
         if (!isNullorEmpty(ampo_price)) {
@@ -1134,7 +1191,7 @@
         }
 
         inlineQty += '<div class="col-xs-6 ampo_time_div"><div class="input-group"><span class="input-group-addon" id="ampo_time_text">AMPO TIME ';
-        if (role == 1000) {
+        if (role == 1000 && zee != 696179) {
             inlineQty += ' <span class="mandatory">*</span>';
         }
         inlineQty += '</span><select id="ampo_time" class="form-control ampo_time"><option></option>';
@@ -1164,11 +1221,11 @@
         inlineQty += '<div class="form-group container ampo_section">';
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-6 pmpo_price_div"><div class="input-group"><span class="input-group-addon" id="pmpo_price_text">PMPO PRICE ';
-        if (role == 1000) {
+        if (role == 1000 && zee != 696179) {
             inlineQty += '<span class="mandatory">*</span>';
         }
         inlineQty += '</span><input id="pmpo_price" class="form-control pmpo_price"';
-        if (role == 1000) {
+        if (role == 1000 && zee != 696179) {
             inlineQty += ' required ';
         }
         if (!isNullorEmpty(pmpo_price)) {
@@ -1178,7 +1235,7 @@
         }
 
         inlineQty += '<div class="col-xs-6 pmpo_time_div"><div class="input-group"><span class="input-group-addon" id="pmpo_time_text">PMPO TIME ';
-        if (role == 1000) {
+        if (role == 1000 && zee != 696179) {
             inlineQty += '<span class="mandatory">*</span>';
         }
         inlineQty += '</span><select id="pmpo_time" class="form-control pmpo_time"><option></option>';

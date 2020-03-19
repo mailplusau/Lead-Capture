@@ -7,7 +7,7 @@
  * Description: Lead Capture /Customer Details - Client     
  * 
  * @Last Modified by:   Ankith
- * @Last Modified time: 2020-03-04 14:16:12
+ * @Last Modified time: 2020-03-16 10:46:57
  *
  */
 
@@ -80,6 +80,9 @@ $(document).on('change', '#survey1', function(e) {
         $('#survey3').val(2);
         $('#survey3').hide();
         $('.survey3').hide();
+        $('#survey7').val(2);
+        $('#survey7').hide();
+        $('.survey7').hide();
     } else {
         $('#survey2').val();
         $('#survey2').show()
@@ -87,6 +90,9 @@ $(document).on('change', '#survey1', function(e) {
         $('#survey3').val();
         $('#survey3').show();
         $('.survey3').show();
+        $('#survey7').val();
+        $('#survey7').show();
+        $('.survey7').show();
     }
 });
 
@@ -269,7 +275,7 @@ $(document).on('click', '#reviewcontacts', function(event) {
     if (result == false) {
         return false;
     }
-    customer_id = createUpdateCustomer(customer_id);
+    customer_id = createUpdateCustomer(customer_id, null, true);
     // if (!isNullorEmpty($('#note').val())) {
     //     createUserNote(customer_id);
     // }
@@ -433,7 +439,14 @@ function saveRecord(context) {
     var pmpo_price = $('#pmpo_price').val();
     var pmpo_time = $('#pmpo_time').val();
 
-    if (role == 1000) {
+    var zee = $('#zee option:selected').val();
+
+    var survey1 = $('#survey1 option:selected').val();
+    var survey2 = $('#survey2 option:selected').val();
+    var survey3 = $('#survey3 option:selected').val();
+    var survey7 = $('#survey7 option:selected').val();
+
+    if (role == 1000 && zee != 696179) {
         if (isNullorEmpty(ampo_price)) {
             showAlert('Please Enter AMPO Price');
             return false;
@@ -456,6 +469,29 @@ function saveRecord(context) {
         }
     }
 
+    if (role == 1000 && zee == 696179) {
+        if (isNullorEmpty(survey1)) {
+            alertMessage += 'Please Answer Survey Information "Using Mail / Parcels / Satchels Regularly?" </br>';
+            return_value = false;
+        } else if (survey1 == 1) {
+            if (isNullorEmpty(survey2)) {
+                alertMessage += 'Please Answer Survey Information "Using Express Post?"</br>';
+                return_value = false;
+            }
+            if (isNullorEmpty(survey3)) {
+                alertMessage += 'Please Answer Survey Information "Using Local Couriers?"</br>';
+                return_value = false;
+            }
+
+            if (isNullorEmpty(survey7)) {
+                alertMessage += 'Please Answer Survey Information "Frequency of Mail / Parcels / Satchels?"</br>';
+                return_value = false;
+            }
+        }
+
+
+    }
+
     cust_inactive = true;
     customer_id = createUpdateCustomer(customer_id);
 
@@ -474,9 +510,7 @@ function validate(status) {
     var daytodayphone = $('#daytodayphone').val();
     var industry = $('#industry option:selected').val();
 
-    // var survey1 = $('#survey1 option:selected').val();
-    // var survey2 = $('#survey2 option:selected').val();
-    // var survey3 = $('#survey3 option:selected').val();
+    
 
 
     var leadsource = $('#leadsource option:selected').val();
@@ -504,18 +538,10 @@ function validate(status) {
         return_value = false;
     }
 
-    // if (isNullorEmpty(survey1)) {
-    //     alertMessage += 'Please Answer Survey Information "Using AusPost for Mail & Parcel?" </br>';
-    //     return_value = false;
-    // }
-    // if (isNullorEmpty(survey2)) {
-    //     alertMessage += 'Please Answer Survey Information "Using AusPost Outlet?"</br>';
-    //     return_value = false;
-    // }
-    // if (isNullorEmpty(survey3)) {
-    //     alertMessage += 'Please Answer Survey Information "Is this Auspost outlet a LPO?"</br>';
-    //     return_value = false;
-    // }
+    var zee = $('#zee option:selected').val();
+
+    
+
 
     if (isNullorEmpty(zee) || zee == 0) {
         alertMessage += 'Please select a Franchisee to which the customer Belongs</br>';
@@ -580,7 +606,7 @@ function validate(status) {
     return return_value;
 }
 
-function createUpdateCustomer(customer_id, update_status) {
+function createUpdateCustomer(customer_id, update_status, create_contact) {
 
     if (isNullorEmpty(customer_id)) {
 
@@ -597,8 +623,9 @@ function createUpdateCustomer(customer_id, update_status) {
         if (!isNullorEmpty(nlapiGetFieldValue('customer_list'))) {
             customerRecord.setFieldValue('custentity_date_lead_entered', getDate());
         }
-        if (cust_inactive == true) {
+        if (cust_inactive == true || create_contact == true) {
             customerRecord.setFieldValue('isinactive', 'F');
+            update_required = true;
 
         }
 
@@ -639,6 +666,10 @@ function createUpdateCustomer(customer_id, update_status) {
         update_required = true;
     }
 
+    if (!isNullorEmpty($('#zee_notes').val())) {
+        update_required = true;
+    }
+
     if (!isNullorEmpty($('#survey1 option:selected').val()) && !isNullorEmpty($('#survey2 option:selected').val()) && !isNullorEmpty($('#survey3 option:selected').val())) {
         update_required = true;
     }
@@ -671,7 +702,7 @@ function createUpdateCustomer(customer_id, update_status) {
     if (update_required == true) {
 
         customerRecord.setFieldValue('companyname', $('#company_name').val());
-        if (role == 1000) {
+        if (role == 1000 && isNullorEmpty(create_contact)) {
             customerRecord.setFieldValue('isinactive', 'T');
         }
 
@@ -733,6 +764,7 @@ function createUpdateCustomer(customer_id, update_status) {
         customerRecord.setFieldValue('custentity_lead_type', $('#survey6').val());
         customerRecord.setFieldValue('custentity_mp_toll_zeevisit', zee_visit);
         customerRecord.setFieldValue('custentity_category_multisite_link', $('#website').val());
+        customerRecord.setFieldValue('custentity_mp_toll_zeevisit_memo', $('#zee_notes').val());
         customerRecord.setFieldValue('custentity_industry_category', $('#industry option:selected').val());
         if (!isNullorEmpty($('#daytodayphone').val())) {
             customerRecord.setFieldValue('phone', $('#daytodayphone').val());
@@ -742,8 +774,7 @@ function createUpdateCustomer(customer_id, update_status) {
         customerRecord.setFieldValue('leadsource', $('#leadsource option:selected').val());
         if (($('#previous_zee option:selected').val()) != 0) {
             customerRecord.setFieldValue('custentity_previous_zee', $('#previous_zee option:selected').val());
-        }
-        else {
+        } else {
             customerRecord.setFieldValue('custentity_previous_zee', '');
         }
         customerRecord.setFieldValue('leadsource', $('#leadsource option:selected').val());
