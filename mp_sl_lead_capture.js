@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-03-19 14:02:12
+     * @Last Modified time: 2020-03-20 14:20:52
      *
      */
 
@@ -304,6 +304,7 @@
             inlineHtml += '<input id="customer_id" class="form-control" required value="' + customer_id + '" type="hidden"/></div></div>';
 
             form.addField('status_id', 'text', 'status_id').setDisplayType('hidden');
+            form.addField('zee_id', 'text', 'zee_id').setDisplayType('hidden').setDefaultValue(zee);
 
             inlineHtml += '<input id="zee_id" class="form-control" required value="' + zee + '" type="hidden"/></div></div>';
 
@@ -438,6 +439,7 @@
         } else {
 
             var status_id = request.getParameter('status_id');
+            var partner_id = request.getParameter('zee_id');
             var script_id = request.getParameter('script_id');
             var deploy_id = request.getParameter('deploy_id');
             var customer_id = parseInt(request.getParameter('customer_id'));
@@ -447,6 +449,8 @@
             var customer_name = customer_record.getFieldValue('companyname');
 
             if (status_id == '57') {
+                var zeeRecord = nlapiLoadRecord('partner', partner_id);
+                var salesRep = zeeRecord.getFieldValue('custentity_sales_rep_assigned');
                 var recordtoCreate = nlapiCreateRecord('customrecord_sales');
                 var date2 = new Date();
                 var subject = '';
@@ -463,7 +467,7 @@
                 recordtoCreate.setFieldValue('custrecord_sales_campaign', 64);
 
                 recordtoCreate.setFieldValue('custrecord_sales_assigned', nlapiGetUser());
-                nlapiSetFieldValue('salesrep', 668712);
+                nlapiSetFieldValue('salesrep', salesRep);
 
                 recordtoCreate.setFieldValue('custrecord_sales_outcome', 5);
                 recordtoCreate.setFieldValue('custrecord_sales_callbackdate', getDate());
@@ -474,8 +478,40 @@
 
                 // nlapiSubmitRecord(recordtoCreate);
 
-                nlapiSendEmail(112209, ['belinda.urbani@mailplus.com.au', 'stacey.williams@mailplus.com.au'], 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au']);
+                nlapiSendEmail(112209, salesRep, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au']);
 
+            } else {
+                var zeeRecord = nlapiLoadRecord('partner', partner_id);
+                var salesRep = zeeRecord.getFieldValue('custentity_sales_rep_assigned');
+
+                var recordtoCreate = nlapiCreateRecord('customrecord_sales');
+                var date2 = new Date();
+                var subject = '';
+                var body = '';
+
+                var cust_id_link = 'https://1048144.app.netsuite.com/app/common/entity/custjob.nl?id=' + customer_id;
+
+                body = 'New sales record has been created. \n You have been assigned a lead. \n Customer Name: ' + entity_id + ' ' + customer_name + '\nLink: ' + cust_id_link;
+
+                var userRole = parseInt(nlapiGetContext().getRole());
+
+                // Set customer, campaign, user, last outcome, callback date
+                recordtoCreate.setFieldValue('custrecord_sales_customer', customer_id);
+                recordtoCreate.setFieldValue('custrecord_sales_campaign', 64);
+
+                recordtoCreate.setFieldValue('custrecord_sales_assigned', nlapiGetUser());
+                nlapiSetFieldValue('salesrep', salesRep);
+
+                recordtoCreate.setFieldValue('custrecord_sales_outcome', 5);
+                recordtoCreate.setFieldValue('custrecord_sales_callbackdate', getDate());
+                recordtoCreate.setFieldValue('custrecord_sales_callbacktime', nlapiDateToString(date2.addHours(0), 'timeofday'));
+                if (nlapiGetFieldValue('campaign_type') == 56) {
+                    recordtoCreate.setFieldValue('custrecord_sales_followup_stage', 5);
+                }
+
+                // nlapiSubmitRecord(recordtoCreate);
+
+                nlapiSendEmail(112209, salesRep, 'Sales Lead - ' + entity_id + ' ' + customer_name, body);
             }
 
 
