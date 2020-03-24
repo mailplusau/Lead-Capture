@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-03-20 14:34:43
+     * @Last Modified time: 2020-03-24 11:24:40
      *
      */
 
@@ -466,7 +466,7 @@
                 recordtoCreate.setFieldValue('custrecord_sales_customer', customer_id);
                 recordtoCreate.setFieldValue('custrecord_sales_campaign', 64);
 
-                recordtoCreate.setFieldValue('custrecord_sales_assigned', nlapiGetUser());
+                recordtoCreate.setFieldValue('custrecord_sales_assigned', salesRep);
                 nlapiSetFieldValue('salesrep', salesRep);
 
                 recordtoCreate.setFieldValue('custrecord_sales_outcome', 5);
@@ -478,7 +478,7 @@
 
                 nlapiSubmitRecord(recordtoCreate);
 
-                nlapiSendEmail(112209, salesRep, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au']);
+                nlapiSendEmail(112209, salesRep, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au']);
 
             } else {
                 var zeeRecord = nlapiLoadRecord('partner', partner_id);
@@ -499,7 +499,10 @@
                 recordtoCreate.setFieldValue('custrecord_sales_customer', customer_id);
                 recordtoCreate.setFieldValue('custrecord_sales_campaign', 62);
 
-                recordtoCreate.setFieldValue('custrecord_sales_assigned', nlapiGetUser());
+
+                recordtoCreate.setFieldValue('custrecord_sales_assigned', salesRep);
+
+
                 nlapiSetFieldValue('salesrep', salesRep);
 
                 recordtoCreate.setFieldValue('custrecord_sales_outcome', 5);
@@ -663,12 +666,12 @@
         resultSetLeadSource = searched_lead_source.runSearch();
 
         if (role == 1000) {
-            if(zee != 696179){
-                 inlineQty += '<select id="leadsource" class="form-control leadsource" readonly ><option value="-4"  selected>Franchisee Generated</option>';
+            if (zee != 696179) {
+                inlineQty += '<select id="leadsource" class="form-control leadsource" readonly ><option value="-4"  selected>Franchisee Generated</option>';
             } else {
-                 inlineQty += '<select id="leadsource" class="form-control leadsource" readonly ><option value="242647"  selected>Field Sales - Wendie</option>';
+                inlineQty += '<select id="leadsource" class="form-control leadsource" readonly ><option value="242647"  selected>Field Sales - Wendie</option>';
             }
-           
+
         } else {
             inlineQty += '<select id="leadsource" class="form-control leadsource" ><option></option>';
             resultSetLeadSource.forEachResult(function(searchResultLeadSource) {

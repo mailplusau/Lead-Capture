@@ -7,7 +7,7 @@
  * Description: Lead Capture /Customer Details - Client     
  * 
  * @Last Modified by:   Ankith
- * @Last Modified time: 2020-03-16 10:46:57
+ * @Last Modified time: 2020-03-23 13:05:08
  *
  */
 
@@ -620,7 +620,7 @@ function createUpdateCustomer(customer_id, update_status, create_contact) {
         var customerRecord = nlapiLoadRecord('customer', customer_id);
 
         customerRecord.setFieldValue('entitystatus', $('#status option:selected').val());
-        if (!isNullorEmpty(nlapiGetFieldValue('customer_list'))) {
+        if (isNullorEmpty(nlapiGetFieldValue('customer_list'))) {
             customerRecord.setFieldValue('custentity_date_lead_entered', getDate());
         }
         if (cust_inactive == true || create_contact == true) {
@@ -715,7 +715,7 @@ function createUpdateCustomer(customer_id, update_status, create_contact) {
             // customerRecord.setFieldValue('partner', ctx.getUser());
         } else {
             customerRecord.setFieldValue('partner', $('#zee option:selected').val());
-            if (!isNullorEmpty(nlapiGetFieldValue('customer_list'))) {
+            if (isNullorEmpty(nlapiGetFieldValue('customer_list'))) {
                 customerRecord.setFieldValue('custentity_lead_entered_by', ctx.getUser());
             }
         }
