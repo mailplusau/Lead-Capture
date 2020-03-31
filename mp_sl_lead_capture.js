@@ -6,8 +6,8 @@
      *
      * Description: Lead Capture / Customer Details Page        
      * 
-     * @Last Modified by:   Ankith Ravindran
-     * @Last Modified time: 2020-03-25 15:36:00
+     * @Last Modified by:   Ankith
+     * @Last Modified time: 2020-03-31 20:06:30
      *
      */
 
@@ -98,13 +98,22 @@
 
             if (!isNullorEmpty(customer_id)) {
 
+                var customer_record = nlapiLoadRecord('customer', customer_id);
+                customer_status_id = customer_record.getFieldValue('entitystatus');
+
+                if (customer_status_id == 13) {
+                    form = nlapiCreateForm('Customer Details');
+                    customer_list_page = 'T';
+                } else {
+                    form = nlapiCreateForm('Lead Capture');
+                }
+
                 form.addField('customer_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(customer_id);
                 form.addField('script_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(script_id);
                 form.addField('deploy_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(deploy_id);
                 form.addField('mpex_drop_off', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(mpex_drop_off);
                 form.addField('customer_list', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(customer_list_page);
 
-                var customer_record = nlapiLoadRecord('customer', customer_id);
 
                 entityid = customer_record.getFieldValue('entityid');
                 companyName = customer_record.getFieldValue('companyname');
@@ -305,6 +314,7 @@
 
             form.addField('status_id', 'text', 'status_id').setDisplayType('hidden');
             form.addField('zee_id', 'text', 'zee_id').setDisplayType('hidden').setDefaultValue(zee);
+            form.addField('custpage_auto_allocate', 'text', 'custpage_auto_allocate').setDisplayType('hidden');
 
             inlineHtml += '<input id="zee_id" class="form-control" required value="' + zee + '" type="hidden"/></div></div>';
 
@@ -442,13 +452,17 @@
             var partner_id = request.getParameter('zee_id');
             var script_id = request.getParameter('script_id');
             var deploy_id = request.getParameter('deploy_id');
+            var auto_allocate = request.getParameter('custpage_auto_allocate');
             var customer_id = parseInt(request.getParameter('customer_id'));
 
             var customer_record = nlapiLoadRecord('customer', customer_id);
             var entity_id = customer_record.getFieldValue('entityid');
             var customer_name = customer_record.getFieldValue('companyname');
+            var customer_list = customer_record.getFieldValue('customer_list');
 
-            if (ctx.getUser() != 696992) {
+            nlapiLogExecution('DEBUG', 'auto_allocate', auto_allocate)
+
+            if (ctx.getUser() != 696992 && auto_allocate == 1 && customer_list != 'T') {
                 if (status_id == '57') {
                     var zeeRecord = nlapiLoadRecord('partner', partner_id);
                     var salesRep = zeeRecord.getFieldValue('custentity_sales_rep_assigned');
@@ -738,6 +752,8 @@
         inlineQty += '<div class="col-xs-6 daytodayphone_div"><div class="input-group"><span class="input-group-addon" id="daytodayphone_text">DAY-TO-DAY PHONE </span><input id="daytodayphone" class="form-control daytodayphone" data-oldvalue="' + daytodayphone + '" value="' + daytodayphone + '" /><div class="input-group-btn"><button type="button" class="btn btn-success" id="call_daytoday_phone"><span class="glyphicon glyphicon-earphone"></span></button></div></div></div>';
         inlineQty += '</div>';
         inlineQty += '</div>';
+
+
 
         return inlineQty;
 
@@ -1205,7 +1221,17 @@
 
     function serviceDetailsSection(pricing_notes, ampo_price, ampo_time, pmpo_price, pmpo_time) {
 
-        var inlineQty = '<div class="form-group container pricing_notes">';
+        var inlineQty = '';
+        if (role != 1000) {
+            inlineQty += '<div class="form-group container auto_allocate">';
+            inlineQty += '<div class="row">';
+            inlineQty += '<div class="col-xs-6 auto_allocate_div"><div class="input-group"><span class="input-group-addon" id="auto_allocate_text">AUTO ALLOCATE</span><select id="auto_allocate" class="form-control auto_allocate"><option value="' + 1 + '">YES</option><option value="' + 2 + '">NO</option></select></div></div>';
+            inlineQty += '</div>';
+            inlineQty += '</div>';
+        }
+
+
+        inlineQty += '<div class="form-group container pricing_notes">';
         inlineQty += '<div class="row">';
         if (isNullorEmpty(pricing_notes)) {
             pricing_notes = "";
@@ -1213,6 +1239,7 @@
         inlineQty += '<div class="col-xs-6 pricing_notes"><div class="input-group"><span class="input-group-addon" id="pricing_notes_text">PRICING NOTES </span><textarea id="pricing_notes" class="form-control pricing_notes" style="margin: 0px; height: 122px; width: 444px;">' + pricing_notes + '</textarea></div></div>';
         inlineQty += '</div>';
         inlineQty += '</div>';
+
 
         inlineQty += '<div class="form-group container ampo_section">';
         inlineQty += '<div class="row">';
