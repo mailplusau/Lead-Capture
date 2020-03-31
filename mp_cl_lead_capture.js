@@ -7,7 +7,7 @@
  * Description: Lead Capture /Customer Details - Client     
  * 
  * @Last Modified by:   Ankith
- * @Last Modified time: 2020-03-23 13:05:08
+ * @Last Modified time: 2020-03-31 20:06:28
  *
  */
 
@@ -445,6 +445,12 @@ function saveRecord(context) {
     var survey2 = $('#survey2 option:selected').val();
     var survey3 = $('#survey3 option:selected').val();
     var survey7 = $('#survey7 option:selected').val();
+
+    var auto_allocate = $('#auto_allocate option:selected').val();
+
+    console.log(auto_allocate)
+
+    nlapiSetFieldValue('custpage_auto_allocate', auto_allocate);
 
     if (role == 1000 && zee != 696179) {
         if (isNullorEmpty(ampo_price)) {
