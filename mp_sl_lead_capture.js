@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-03-31 20:06:30
+     * @Last Modified time: 2020-04-02 10:21:05
      *
      */
 
@@ -22,6 +22,7 @@
     var zee = 0;
     var role = ctx.getRole();
     var row_count = 0;
+    var customer_list_page = null;
 
     var service_type_search = serviceTypeSearch(null, [1]);
 
@@ -85,7 +86,7 @@
                 deploy_id = null;
             }
 
-            var customer_list_page = null;
+            
 
             if (!isNullorEmpty(script_id) && !isNullorEmpty(deploy_id)) {
                 //Coming from the customer list page
@@ -460,76 +461,81 @@
             var customer_name = customer_record.getFieldValue('companyname');
             var customer_list = customer_record.getFieldValue('customer_list');
 
-            nlapiLogExecution('DEBUG', 'auto_allocate', auto_allocate)
+            nlapiLogExecution('DEBUG', 'auto_allocate', auto_allocate);
 
-            if (ctx.getUser() != 696992 && auto_allocate == 1 && customer_list != 'T') {
-                if (status_id == '57') {
-                    var zeeRecord = nlapiLoadRecord('partner', partner_id);
-                    var salesRep = zeeRecord.getFieldValue('custentity_sales_rep_assigned');
-                    var recordtoCreate = nlapiCreateRecord('customrecord_sales');
-                    var date2 = new Date();
-                    var subject = '';
-                    var body = '';
+            var customer_record = nlapiLoadRecord('customer', customer_id);
+            customer_status_id = customer_record.getFieldValue('entitystatus');
 
-                    var cust_id_link = 'https://1048144.app.netsuite.com/app/common/entity/custjob.nl?id=' + customer_id;
+            if (customer_status_id != 13) {
+                if (ctx.getUser() != 696992 && auto_allocate == 1 && customer_list != 'T') {
+                    if (status_id == '57') {
+                        var zeeRecord = nlapiLoadRecord('partner', partner_id);
+                        var salesRep = zeeRecord.getFieldValue('custentity_sales_rep_assigned');
+                        var recordtoCreate = nlapiCreateRecord('customrecord_sales');
+                        var date2 = new Date();
+                        var subject = '';
+                        var body = '';
 
-                    body = 'New sales record has been created. \n A HOT Lead has been entered into the System. Please respond in an hour. \n Customer Name: ' + entity_id + ' ' + customer_name + '\nLink: ' + cust_id_link;
+                        var cust_id_link = 'https://1048144.app.netsuite.com/app/common/entity/custjob.nl?id=' + customer_id;
 
-                    var userRole = parseInt(nlapiGetContext().getRole());
+                        body = 'New sales record has been created. \n A HOT Lead has been entered into the System. Please respond in an hour. \n Customer Name: ' + entity_id + ' ' + customer_name + '\nLink: ' + cust_id_link;
 
-                    // Set customer, campaign, user, last outcome, callback date
-                    recordtoCreate.setFieldValue('custrecord_sales_customer', customer_id);
-                    recordtoCreate.setFieldValue('custrecord_sales_campaign', 64);
+                        var userRole = parseInt(nlapiGetContext().getRole());
 
-                    recordtoCreate.setFieldValue('custrecord_sales_assigned', salesRep);
-                    nlapiSetFieldValue('salesrep', salesRep);
+                        // Set customer, campaign, user, last outcome, callback date
+                        recordtoCreate.setFieldValue('custrecord_sales_customer', customer_id);
+                        recordtoCreate.setFieldValue('custrecord_sales_campaign', 64);
 
-                    recordtoCreate.setFieldValue('custrecord_sales_outcome', 5);
-                    recordtoCreate.setFieldValue('custrecord_sales_callbackdate', getDate());
-                    recordtoCreate.setFieldValue('custrecord_sales_callbacktime', nlapiDateToString(date2.addHours(0), 'timeofday'));
-                    if (nlapiGetFieldValue('campaign_type') == 56) {
-                        recordtoCreate.setFieldValue('custrecord_sales_followup_stage', 5);
+                        recordtoCreate.setFieldValue('custrecord_sales_assigned', salesRep);
+                        nlapiSetFieldValue('salesrep', salesRep);
+
+                        recordtoCreate.setFieldValue('custrecord_sales_outcome', 5);
+                        recordtoCreate.setFieldValue('custrecord_sales_callbackdate', getDate());
+                        recordtoCreate.setFieldValue('custrecord_sales_callbacktime', nlapiDateToString(date2.addHours(0), 'timeofday'));
+                        if (nlapiGetFieldValue('campaign_type') == 56) {
+                            recordtoCreate.setFieldValue('custrecord_sales_followup_stage', 5);
+                        }
+
+                        nlapiSubmitRecord(recordtoCreate);
+
+                        nlapiSendEmail(112209, salesRep, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au']);
+
+                    } else {
+                        var zeeRecord = nlapiLoadRecord('partner', partner_id);
+                        var salesRep = zeeRecord.getFieldValue('custentity_sales_rep_assigned');
+
+                        var recordtoCreate = nlapiCreateRecord('customrecord_sales');
+                        var date2 = new Date();
+                        var subject = '';
+                        var body = '';
+
+                        var cust_id_link = 'https://1048144.app.netsuite.com/app/common/entity/custjob.nl?id=' + customer_id;
+
+                        body = 'New sales record has been created. \n You have been assigned a lead. \n Customer Name: ' + entity_id + ' ' + customer_name + '\nLink: ' + cust_id_link;
+
+                        var userRole = parseInt(nlapiGetContext().getRole());
+
+                        // Set customer, campaign, user, last outcome, callback date
+                        recordtoCreate.setFieldValue('custrecord_sales_customer', customer_id);
+                        recordtoCreate.setFieldValue('custrecord_sales_campaign', 62);
+
+
+                        recordtoCreate.setFieldValue('custrecord_sales_assigned', salesRep);
+
+
+                        nlapiSetFieldValue('salesrep', salesRep);
+
+                        recordtoCreate.setFieldValue('custrecord_sales_outcome', 5);
+                        recordtoCreate.setFieldValue('custrecord_sales_callbackdate', getDate());
+                        recordtoCreate.setFieldValue('custrecord_sales_callbacktime', nlapiDateToString(date2.addHours(0), 'timeofday'));
+                        if (nlapiGetFieldValue('campaign_type') == 56) {
+                            recordtoCreate.setFieldValue('custrecord_sales_followup_stage', 5);
+                        }
+
+                        nlapiSubmitRecord(recordtoCreate);
+
+                        nlapiSendEmail(112209, salesRep, 'Sales Lead - ' + entity_id + ' ' + customer_name, body);
                     }
-
-                    nlapiSubmitRecord(recordtoCreate);
-
-                    nlapiSendEmail(112209, salesRep, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au']);
-
-                } else {
-                    var zeeRecord = nlapiLoadRecord('partner', partner_id);
-                    var salesRep = zeeRecord.getFieldValue('custentity_sales_rep_assigned');
-
-                    var recordtoCreate = nlapiCreateRecord('customrecord_sales');
-                    var date2 = new Date();
-                    var subject = '';
-                    var body = '';
-
-                    var cust_id_link = 'https://1048144.app.netsuite.com/app/common/entity/custjob.nl?id=' + customer_id;
-
-                    body = 'New sales record has been created. \n You have been assigned a lead. \n Customer Name: ' + entity_id + ' ' + customer_name + '\nLink: ' + cust_id_link;
-
-                    var userRole = parseInt(nlapiGetContext().getRole());
-
-                    // Set customer, campaign, user, last outcome, callback date
-                    recordtoCreate.setFieldValue('custrecord_sales_customer', customer_id);
-                    recordtoCreate.setFieldValue('custrecord_sales_campaign', 62);
-
-
-                    recordtoCreate.setFieldValue('custrecord_sales_assigned', salesRep);
-
-
-                    nlapiSetFieldValue('salesrep', salesRep);
-
-                    recordtoCreate.setFieldValue('custrecord_sales_outcome', 5);
-                    recordtoCreate.setFieldValue('custrecord_sales_callbackdate', getDate());
-                    recordtoCreate.setFieldValue('custrecord_sales_callbacktime', nlapiDateToString(date2.addHours(0), 'timeofday'));
-                    if (nlapiGetFieldValue('campaign_type') == 56) {
-                        recordtoCreate.setFieldValue('custrecord_sales_followup_stage', 5);
-                    }
-
-                    nlapiSubmitRecord(recordtoCreate);
-
-                    nlapiSendEmail(112209, salesRep, 'Sales Lead - ' + entity_id + ' ' + customer_name, body);
                 }
             }
 
@@ -1222,10 +1228,16 @@
     function serviceDetailsSection(pricing_notes, ampo_price, ampo_time, pmpo_price, pmpo_time) {
 
         var inlineQty = '';
-        if (role != 1000) {
+        if (role != 1000 && customer_list_page == null) {
             inlineQty += '<div class="form-group container auto_allocate">';
             inlineQty += '<div class="row">';
             inlineQty += '<div class="col-xs-6 auto_allocate_div"><div class="input-group"><span class="input-group-addon" id="auto_allocate_text">AUTO ALLOCATE</span><select id="auto_allocate" class="form-control auto_allocate"><option value="' + 1 + '">YES</option><option value="' + 2 + '">NO</option></select></div></div>';
+            inlineQty += '</div>';
+            inlineQty += '</div>';
+        } else {
+            inlineQty += '<div class="form-group container auto_allocate">';
+            inlineQty += '<div class="row">';
+            inlineQty += '<div class="col-xs-6 auto_allocate_div"><div class="input-group"><span class="input-group-addon" id="auto_allocate_text">AUTO ALLOCATE</span><select id="auto_allocate" class="form-control auto_allocate" disabled><option value="' + 1 + '">YES</option><option value="' + 2 + '" selected>NO</option></select></div></div>';
             inlineQty += '</div>';
             inlineQty += '</div>';
         }
