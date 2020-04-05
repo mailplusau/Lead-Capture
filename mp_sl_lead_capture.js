@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-04-02 10:21:05
+     * @Last Modified time: 2020-04-03 12:11:55
      *
      */
 
@@ -540,7 +540,7 @@
             }
 
 
-            if (!isNullorEmpty(script_id) && !isNullorEmpty(deploy_id)) {
+            if (customer_status_id == 13) {
                 nlapiSetRedirectURL('SUITELET', 'customscript_sl_customer_list', 'customdeploy_sl_customer_list', null, null);
             } else {
                 nlapiSetRedirectURL('SUITELET', 'customscript_sl_lead_capture', 'customdeploy_sl_lead_capture', null, null);
