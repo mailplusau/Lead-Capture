@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-04-03 12:11:55
+     * @Last Modified time: 2020-04-06 10:15:03
      *
      */
 
@@ -484,7 +484,7 @@
 
                         // Set customer, campaign, user, last outcome, callback date
                         recordtoCreate.setFieldValue('custrecord_sales_customer', customer_id);
-                        recordtoCreate.setFieldValue('custrecord_sales_campaign', 64);
+                        recordtoCreate.setFieldValue('custrecord_sales_campaign', 62);
 
                         recordtoCreate.setFieldValue('custrecord_sales_assigned', salesRep);
                         nlapiSetFieldValue('salesrep', salesRep);
