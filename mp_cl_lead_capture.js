@@ -7,7 +7,7 @@
  * Description: Lead Capture /Customer Details - Client     
  * 
  * @Last Modified by:   Ankith
- * @Last Modified time: 2020-04-02 15:33:38
+ * @Last Modified time: 2020-04-08 10:11:32
  *
  */
 
@@ -40,6 +40,7 @@ function pageInit() {
     $('.customer_section').hide();
 
     customer_id = $('#customer_id').val();
+    console.log(customer_id);
 
     if (!isNullorEmpty(nlapiGetFieldValue('script_id')) && !isNullorEmpty(nlapiGetFieldValue('deploy_id'))) {
         cust_inactive = true;
@@ -412,7 +413,7 @@ $(document).on('click', '#create_note', function(event) {
     if (result == false) {
         return false;
     }
-    customer_id = createUpdateCustomer(customer_id);
+    customer_id = createUpdateCustomer(customer_id, null, true);
     // if (!isNullorEmpty($('#note').val())) {
     //     createUserNote(customer_id);
     // }
@@ -620,7 +621,7 @@ function createUpdateCustomer(customer_id, update_status, create_contact) {
 
     if (isNullorEmpty(customer_id)) {
 
-        var customerRecord = nlapiCreateRecord('customer');
+        var customerRecord = nlapiCreateRecord('lead');
 
         var update_required = true;
 
@@ -712,7 +713,7 @@ function createUpdateCustomer(customer_id, update_status, create_contact) {
     if (update_required == true) {
 
         customerRecord.setFieldValue('companyname', $('#company_name').val());
-        if (role == 1000 && isNullorEmpty(create_contact)) {
+        if (isNullorEmpty(nlapiGetFieldValue('customer_list')) && isNullorEmpty(create_contact)) {
             customerRecord.setFieldValue('isinactive', 'T');
         }
 

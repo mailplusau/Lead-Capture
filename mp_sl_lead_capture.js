@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-04-06 10:15:03
+     * @Last Modified time: 2020-04-08 10:11:31
      *
      */
 
@@ -86,7 +86,7 @@
                 deploy_id = null;
             }
 
-            
+
 
             if (!isNullorEmpty(script_id) && !isNullorEmpty(deploy_id)) {
                 //Coming from the customer list page
@@ -853,7 +853,9 @@
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-3 reviewaddress"><input type="button" value="ADD/EDIT ADDRESSES" class="form-control btn btn-primary" id="reviewaddress" /></div>';
         inlineQty += '<div class="col-xs-3 "></div>';
-        inlineQty += '<div class="col-xs-3 reviewcontacts"><input type="button" value="ADD/EDIT CONTACTS" class="form-control btn btn-primary" id="reviewcontacts" /></div>';
+        if (!isNullorEmpty(resultSetAddresses)) {
+            inlineQty += '<div class="col-xs-3 reviewcontacts"><input type="button" value="ADD/EDIT CONTACTS" class="form-control btn btn-primary" id="reviewcontacts" /></div>';
+        }
         inlineQty += '</div>';
         inlineQty += '</div>';
 
