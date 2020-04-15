@@ -7,7 +7,7 @@
  * Description: Lead Capture /Customer Details - Client     
  * 
  * @Last Modified by:   Ankith
- * @Last Modified time: 2020-04-08 10:11:32
+ * @Last Modified time: 2020-04-16 09:15:15
  *
  */
 
@@ -253,7 +253,7 @@ $(document).on('click', '#sendemail', function(event) {
     var records = null;
     var attachments = null;
     var notifySenderOnBounce = true;
-    nlapiSendEmail(112209, email, emailSubject, emailBody, ['ankith.ravindran@mailplus.com.au'], bcc, records, attachments, notifySenderOnBounce);
+    nlapiSendEmail(112209, email, emailSubject, emailBody, null, bcc, records, attachments, notifySenderOnBounce);
 
     recCustomer.setFieldValue('custentity_mpex_drop_notified', 1);
     var date_split = dropoff_date.split('-');
