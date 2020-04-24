@@ -7,7 +7,7 @@
  * Description: Lead Capture /Customer Details - Client     
  * 
  * @Last Modified by:   Ankith
- * @Last Modified time: 2020-04-16 09:15:15
+ * @Last Modified time: 2020-04-24 12:06:24
  *
  */
 
@@ -21,7 +21,7 @@ var ctx = nlapiGetContext();
 var zee = 0;
 var role = ctx.getRole();
 
-if (role == 1000) {
+if (role == 1000) { //Franchisee
     zee = ctx.getUser();
 } else if (role == 3) { //Administrator
     zee = 6; //test
@@ -33,6 +33,7 @@ var customer_id = null;
 var type = null;
 var cust_inactive = false;
 
+//On Page initialisation
 function pageInit() {
 
     $('#alert').hide();
@@ -52,6 +53,7 @@ function pageInit() {
     }
 }
 
+//Show Aler message on top of the page with errors
 function showAlert(message) {
     console.log(message)
     $('#alert').html('<button type="button" class="close">&times;</button>' + message);
@@ -64,15 +66,17 @@ function showAlert(message) {
     // $(window).scrollTop($('#alert').offset().top);
 }
 
+//Show the tabs content on click of a tab
 $(".nav-tabs").on("click", "a", function(e) {
-
     $(this).tab('show');
 });
 
+//Close the Alert Box on click
 $(document).on('click', '#alert .close', function(e) {
     $(this).parent().hide();
 });
 
+//On Change of Using Mail / Parcels / Satchels Regularly?
 $(document).on('change', '#survey1', function(e) {
     if ($('#survey1 option:selected').val() == 2) {
         $('#survey2').val(2);
@@ -97,6 +101,7 @@ $(document).on('change', '#survey1', function(e) {
     }
 });
 
+//On change of Franchisee
 $(document).on("change", ".zee_dropdown", function(e) {
 
     var zee = $(this).val();
@@ -110,24 +115,7 @@ $(document).on("change", ".zee_dropdown", function(e) {
     window.location.href = url;
 });
 
-$(document).on('change', '#campaign', function(e) {
-    var campaign_id = $('#campaign option:selected').val();
-    var campaign_record_type = $('#campaign option:selected').attr('data-recordtype');
-    var campaign_special_customer = $('#campaign option:selected').attr('data-sc');
-
-    $('#camp_id').val(campaign_id);
-    $('#camp_sc').val(campaign_special_customer);
-
-    $('.create_nominate_section').show();
-
-    if (campaign_record_type == 1) {
-        $('.create').hide();
-    } else {
-        $('.create').show();
-    }
-    $('.nominate').show();
-});
-
+//On change of Lead Source
 $(document).on("change", "#leadsource", function(e) {
     var lead_source = $('#leadsource option:selected').val();
     console.log('lead_source', lead_source);
@@ -139,88 +127,7 @@ $(document).on("change", "#leadsource", function(e) {
     }
 });
 
-$(document).on('click', '.createservicechg', function(event) {
-
-    var result = validate('true');
-    if (result == false) {
-        return false;
-    }
-    customer_id = createUpdateCustomer(customer_id);
-
-
-    // var sales_record_id = parseInt(nlapiGetFieldValue('sales_record_id'));
-    // var state = nlapiGetFieldValue('shipping_state');
-    // var customer_id = parseInt(nlapiGetFieldValue('customer'))
-
-    // var state_id;
-
-    // switch (state) {
-    //     case 'NSW':
-    //         state_id = 1;
-    //         break;
-    //     case 'QLD':
-    //         state_id = 2;
-    //         break;
-    //     case 'VIC':
-    //         state_id = 3;
-    //         break;
-    //     case 'SA':
-    //         state_id = 4;
-    //         break;
-    //     case 'TAS':
-    //         state_id = 5;
-    //         break;
-    //     case 'ACT':
-    //         state_id = 6;
-    //         break;
-    //     case 'WA':
-    //         state_id = 7;
-    //         break;
-    //     case 'NT':
-    //         state_id = 8;
-    //         break;
-    //     case 'NZ':
-    //         state_id = 9;
-    //         break;
-    // }
-
-
-
-    // nlapiSetFieldValue('create_service_change', 'T');
-
-
-    // var zee = $('#zee_id').val();
-    // var dateofentry = $('#dateofentry').val();
-    // var commencementtype = $('#commencementtype').val();
-    // var inoutbound = $('#inoutbound').val();
-    // // var commencementdate = $('#commencementdate').val();
-    // // var commRegId = $('#commencementdate').attr('data-commregid');
-    // var signupdate = $('#signupdate').val();
-
-    // // console.log(commRegId);
-
-    // var splitDate = commencementdate.split('-');
-    // commencementdate = splitDate[2] + '/' + splitDate[1] + '/' + splitDate[0];
-
-    // var splitDate = signupdate.split('-');
-    // signupdate = splitDate[2] + '/' + splitDate[1] + '/' + splitDate[0];
-
-    var custparam_params = {
-        custid: parseInt(customer_id),
-        salesrecordid: null,
-        salesrep: 'F',
-        commreg: null,
-        lead: 'T',
-        customid: 'customscript_sl_lead_capture',
-        customdeploy: 'customdeploy_sl_lead_capture'
-    }
-    custparam_params = JSON.stringify(custparam_params);
-
-    var upload_url = baseURL + nlapiResolveURL('suitelet', 'customscript_sl_create_service_change', 'customdeploy_sl_create_service_change') + '&custparam_params=' + custparam_params;
-    window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
-
-});
-
+//On click of Notify Franchisee
 $(document).on('click', '#sendemail', function(event) {
 
     var recCustomer = nlapiLoadRecord('customer', customer_id);
@@ -273,7 +180,7 @@ $(document).on('click', '#sendemail', function(event) {
 
 });
 
-
+//On Click of Add/Edit Contacts
 $(document).on('click', '#reviewcontacts', function(event) {
 
     var result = validate('true');
@@ -301,6 +208,7 @@ $(document).on('click', '#reviewcontacts', function(event) {
 
 });
 
+//On click of Add/Edit Address
 $(document).on('click', '#reviewaddress', function(event) {
 
     var result = validate();
@@ -329,6 +237,7 @@ $(document).on('click', '#reviewaddress', function(event) {
 
 });
 
+//On click of Send Email Button
 function onclick_SendEmail() {
     var result = validate();
     if (result == false) {
@@ -346,6 +255,7 @@ function onclick_SendEmail() {
     window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
 }
 
+//On Click of INVITE TO PORTAL
 function onclick_InviteEmail() {
     var result = validate();
     if (result == false) {
@@ -366,6 +276,7 @@ function onclick_InviteEmail() {
     window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
 }
 
+//On click of INVITE TO PORTAL(U4)
 function onclick_InviteEmailU4() {
     var result = validate();
     if (result == false) {
@@ -386,6 +297,7 @@ function onclick_InviteEmailU4() {
     window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
 }
 
+//On click of Send Info
 function onclick_SendInfo() {
     var result = validate();
     if (result == false) {
@@ -406,7 +318,7 @@ function onclick_SendInfo() {
     window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
 }
 
-
+//On Click of Create User Note
 $(document).on('click', '#create_note', function(event) {
 
     var result = validate('true');
@@ -434,6 +346,13 @@ $(document).on('click', '#create_note', function(event) {
 
 });
 
+//On click Back Button when coming from the Customer List Page
+function onclick_back() {
+    var url = baseURL + "/app/site/hosting/scriptlet.nl?script=925&deploy=1";
+    window.location.href = url;
+}
+
+//On Click of Save
 function saveRecord(context) {
 
     var type = $('#type').val();
@@ -457,12 +376,12 @@ function saveRecord(context) {
 
     nlapiSetFieldValue('custpage_auto_allocate', auto_allocate);
 
+    //If role is Franchisee AND Franchisee is not Brisbane, AMPO Time/Price and PMPO Time/Price are mandatory Fields
     if (role == 1000 && zee != 696179) {
         if (isNullorEmpty(ampo_price)) {
             showAlert('Please Enter AMPO Price');
             return false;
         }
-
 
         if (isNullorEmpty(ampo_time)) {
             showAlert('Please Select Time at which AMPO Service can be performed');
@@ -480,6 +399,7 @@ function saveRecord(context) {
         }
     }
 
+    //If role is Franchisee and Franchisee is Brisbane, below fields are mandatory
     if (role == 1000 && zee == 696179) {
         if (isNullorEmpty(survey1)) {
             alertMessage += 'Please Answer Survey Information "Using Mail / Parcels / Satchels Regularly?" </br>';
@@ -489,6 +409,7 @@ function saveRecord(context) {
                 alertMessage += 'Please Answer Survey Information "Using Express Post?"</br>';
                 return_value = false;
             }
+
             if (isNullorEmpty(survey3)) {
                 alertMessage += 'Please Answer Survey Information "Using Local Couriers?"</br>';
                 return_value = false;
@@ -499,8 +420,6 @@ function saveRecord(context) {
                 return_value = false;
             }
         }
-
-
     }
 
     cust_inactive = true;
@@ -509,6 +428,7 @@ function saveRecord(context) {
     return true;
 }
 
+//Validate Fields
 function validate(status) {
 
     var companyName = $('#company_name').val();
@@ -521,7 +441,7 @@ function validate(status) {
     var daytodayphone = $('#daytodayphone').val();
     var industry = $('#industry option:selected').val();
 
-    
+
 
 
     var leadsource = $('#leadsource option:selected').val();
@@ -551,7 +471,7 @@ function validate(status) {
 
     var zee = $('#zee option:selected').val();
 
-    
+
 
 
     if (isNullorEmpty(zee) || zee == 0) {
@@ -619,27 +539,28 @@ function validate(status) {
 
 function createUpdateCustomer(customer_id, update_status, create_contact) {
 
+    //If customer_id is null, create new record else load record. 
     if (isNullorEmpty(customer_id)) {
-
         var customerRecord = nlapiCreateRecord('lead');
-
         var update_required = true;
-
     } else {
         var update_required = false;
 
         var customerRecord = nlapiLoadRecord('customer', customer_id);
-
         customerRecord.setFieldValue('entitystatus', $('#status option:selected').val());
+       
+       //If not coming from the Customer List Page, update Customer Date - Lead Entered field
         if (isNullorEmpty(nlapiGetFieldValue('customer_list'))) {
             customerRecord.setFieldValue('custentity_date_lead_entered', getDate());
         }
+
+        //Mark the new Lead Entered as inactive = false, when address has been created and all other mandatory fields have been filed. 
         if (cust_inactive == true || create_contact == true) {
             customerRecord.setFieldValue('isinactive', 'F');
             update_required = true;
-
         }
 
+        //If customer status selected is SUSPECT - Hot Lead
         if ($('#status option:selected').val() == 57) {
             customerRecord.setFieldValue('custentity_hotleads', 'T');
         }
@@ -647,13 +568,12 @@ function createUpdateCustomer(customer_id, update_status, create_contact) {
         nlapiSetFieldValue('status_id', $('#status option:selected').val());
 
         if (!isNullorEmpty(update_status) && update_status == 'T') {
-
             var customerRecordId = nlapiSubmitRecord(customerRecord);
-
             return customerRecordId;
         }
 
     }
+    
     if ($('#previous_zee option:selected').val() != $('#previous_zee').attr('data-oldvalue')) {
         update_required = true;
     }
@@ -708,19 +628,13 @@ function createUpdateCustomer(customer_id, update_status, create_contact) {
         update_required = true;
     }
 
-
-
     if (update_required == true) {
-
         customerRecord.setFieldValue('companyname', $('#company_name').val());
         if (isNullorEmpty(nlapiGetFieldValue('customer_list')) && isNullorEmpty(create_contact)) {
             customerRecord.setFieldValue('isinactive', 'T');
         }
 
         customerRecord.setFieldValue('vatregnumber', $('#abn').val());
-
-        console.log(role);
-        console.log(ctx.getUser());
 
         if (role == 1000) {
             // customerRecord.setFieldValue('partner', ctx.getUser());
@@ -765,7 +679,7 @@ function createUpdateCustomer(customer_id, update_status, create_contact) {
                 zee_visit = 'F';
             }
         }
-        console.log(multisite)
+
         customerRecord.setFieldValue('custentity_category_multisite', multisite);
         customerRecord.setFieldValue('custentity_ap_mail_parcel', $('#survey1').val());
         customerRecord.setFieldValue('custentity_customer_express_post', $('#survey2').val());
@@ -810,6 +724,7 @@ function createUpdateCustomer(customer_id, update_status, create_contact) {
     }
 }
 
+//Validate Phone Number fields
 function validatePhone(val) {
 
     var digits = val.replace(/[^0-9]/g, '');
@@ -864,6 +779,7 @@ function checkDuplicate(digits) {
     }
 }
 
+//Validate ABN
 function verify_abn(str) {
 
     if (!str || str.length !== 11) {
@@ -898,148 +814,6 @@ $("textarea").keydown(function(event) {
         return false;
     }
 });
-
-// /**
-//  * [description] - On click of the Add button
-//  */
-// $(document).on('click', '.add_class', function(event) {
-
-//     var resultSet_service = null;
-//     var serviceResult = null;
-
-//     if (!isNullorEmpty(customer_id)) {
-//         var serviceSearch = nlapiLoadSearch('customrecord_service', 'customsearch_smc_services');
-
-//         var newFilters_service = new Array();
-//         newFilters_service[newFilters_service.length] = new nlobjSearchFilter('custrecord_service_customer', null, 'is', parseInt(nlapiGetFieldValue('custpage_customer_id')));
-
-//         serviceSearch.addFilters(newFilters_service);
-
-//         resultSet_service = serviceSearch.runSearch();
-
-//         serviceResult = resultSet_service.getResults(0, 1);
-//     }
-
-
-//     var service_price = $(this).closest('tr').find('.service_price_class').val();
-//     var service_time = $(this).closest('tr').find('.service_price_class').val();
-
-
-//     var el = $(this).closest('tr').find('.service_type');
-
-//     if (el.find('option:selected').length == 0) {
-//         showAlert('Please Select Service');
-
-//         $(this).closest('tr').find('.services_selected_class').focus();
-//         return false;
-//     }
-
-
-
-//     if (isNullorEmpty(service_price)) {
-//         // alert('Please enter Package Name');
-//         showAlert('Please enter Service Price');
-
-//         $(this).closest('tr').find('.service_price_class').focus();
-//         return false;
-//     }
-//     if (isNullorEmpty(service_time)) {
-//         // alert('Please enter Package Name');
-//         showAlert('Please enter Delivery/Pickup Time');
-
-//         $(this).closest('tr').find('.service_time_class').focus();
-//         return false;
-//     }
-
-
-
-//     var row_count = $('#service tr').length;
-
-//     row_count++;
-
-//     var inlineQty = '<tr><td class="first_col"><button class="btn btn-success btn-sm add_class glyphicon glyphicon-plus" type="button" data-toggle="tooltip" data-placement="right" title="Add Expected Service"></button><input type="hidden" class="delete_service" value="F" /></td>';
-//     inlineQty += '<td><select class="form-control service_type" id="service_type">';
-
-//     var service_type_search = serviceTypeSearch(null, [1]);
-
-//     for (var x = 0; x < service_type_search.length; x++) {
-//         inlineQty += '<option value="' + service_type_search[x].getValue('internalid') + '">' + service_type_search[x].getValue('name') + '</option>';
-//     }
-
-
-//     inlineQty += '</select></td>';
-
-//     inlineQty += '<td><div class="service_price_div"><input class="form-control service_price_class"  name="service_price[' + row_count + ']" step="any" pattern="^\d*(\.\d{2}$)?" type="number" /></div></td>';
-//     inlineQty += '<td><div class="service_time_div"><input class="form-control service_time_class"  name="service_time[' + row_count + ']" type="time" /></div></td></tr>';
-
-
-
-//     $('#service tr:last').after(inlineQty);
-
-
-//     $(this).toggleClass('btn-warning btn-success')
-//     $(this).toggleClass('glyphicon-pencil glyphicon-plus');
-//     $(this).toggleClass('edit_class add_class');
-//     $(this).closest('tr').find('.service_type').prop('disabled', function(i, v) {
-//         return !v;
-//     });
-//     $(this).closest('tr').find('.service_price_class').prop('disabled', function(i, v) {
-//         return !v;
-//     });
-//     $(this).closest('tr').find('.service_time_class').prop('disabled', function(i, v) {
-//         return !v;
-//     });
-
-
-//     $(this).closest('tr').find('.first_col').append('<button class="btn btn-danger btn-sm remove_class glyphicon glyphicon-trash" type="button" data-toggle="tooltip" data-placement="right" title="Delete"></button><br>');
-
-//     $(function() {
-//         $('[data-toggle="tooltip"]').tooltip()
-//     })
-
-// });
-
-// /**
-//  * [description] - On the click of the edit button
-//  */
-// $(document).on('click', '.edit_class', function(event) {
-
-//     var service_price = $(this).closest('tr').find('.service_price_class').val();
-//     var service_time = $(this).closest('tr').find('.service_time_class').val();
-
-
-//     var el = $(this).closest('tr').find('.service_type');
-
-
-//     $(this).toggleClass('btn-warning btn-success')
-//     $(this).toggleClass('glyphicon-pencil glyphicon-ok');
-//     $(this).closest('tr').find('.service_type').prop('disabled', function(i, v) {
-//         return !v;
-//     });
-//     $(this).closest('tr').find('.service_price_class').prop('disabled', function(i, v) {
-//         return !v;
-//     });
-//     $(this).closest('tr').find('.service_time_class').prop('disabled', function(i, v) {
-//         return !v;
-//     });
-
-
-// });
-
-// /**
-//  * [description] - On click of the delete button
-//  */
-// $(document).on('click', '.remove_class', function(event) {
-
-//     if (confirm('Are you sure you want to delete this item?\n\nThis action cannot be undone.')) {
-
-//         $(this).closest('tr').find('.delete_service').val("T");
-//         $(this).closest("tr").hide();
-//     }
-
-
-
-// });
 
 function getDate() {
     var date = new Date();

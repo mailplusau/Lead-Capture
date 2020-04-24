@@ -7,10 +7,9 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-04-08 10:11:31
+     * @Last Modified time: 2020-04-24 12:06:26
      *
      */
-
 
     var baseURL = 'https://1048144.app.netsuite.com';
     if (nlapiGetContext().getEnvironment() == "SANDBOX") {
@@ -26,10 +25,8 @@
 
     var service_type_search = serviceTypeSearch(null, [1]);
 
-
-    if (role == 1000) {
-        //Franchisee
-        zee = ctx.getUser();
+    if (role == 1000) { //Role is Franchisee
+        zee = ctx.getUser(); //Get Franchisee ID
     } else {
         zee = 0;
     }
@@ -74,7 +71,7 @@
             var mpex_drop_off = null;
 
             if (!isNullorEmpty(params)) {
-                //Coming from the customer list page
+                //Coming from the Customer List Page
                 params = JSON.parse(params);
                 customer_id = parseInt(params.custid);
                 script_id = params.scriptid;
@@ -86,99 +83,99 @@
                 deploy_id = null;
             }
 
-
-
             if (!isNullorEmpty(script_id) && !isNullorEmpty(deploy_id)) {
-                //Coming from the customer list page
+                //Coming from the Customer List Page
                 var form = nlapiCreateForm('Customer Details');
                 customer_list_page = 'T';
             } else {
+                //Lead Capture Page
                 var form = nlapiCreateForm('Lead Capture');
             }
 
-
             if (!isNullorEmpty(customer_id)) {
-
+                //Load Customer Record
                 var customer_record = nlapiLoadRecord('customer', customer_id);
-                customer_status_id = customer_record.getFieldValue('entitystatus');
+                customer_status_id = customer_record.getFieldValue('entitystatus'); //Customer Status
 
-                if (customer_status_id == 13) {
+                if (customer_status_id == 13) { //Status is Customer - Signed
                     form = nlapiCreateForm('Customer Details');
                     customer_list_page = 'T';
                 } else {
                     form = nlapiCreateForm('Lead Capture');
                 }
 
+                //Hidden Fields on the form
                 form.addField('customer_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(customer_id);
                 form.addField('script_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(script_id);
                 form.addField('deploy_id', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(deploy_id);
                 form.addField('mpex_drop_off', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(mpex_drop_off);
                 form.addField('customer_list', 'text', 'customer_id').setDisplayType('hidden').setDefaultValue(customer_list_page);
 
-
-                entityid = customer_record.getFieldValue('entityid');
-                companyName = customer_record.getFieldValue('companyname');
-                abn = customer_record.getFieldValue('vatregnumber');
+                entityid = customer_record.getFieldValue('entityid'); // Customer ID
+                companyName = customer_record.getFieldValue('companyname'); // Customer Name
+                abn = customer_record.getFieldValue('vatregnumber'); // Customer ABN
                 if (isNullorEmpty(abn)) {
                     abn = '';
                 }
-                zee = customer_record.getFieldValue('partner');
-                zeeText = customer_record.getFieldText('partner');
-                accounts_email = customer_record.getFieldValue('email');
+                zee = customer_record.getFieldValue('partner'); //Customer Franchisee ID
+                zeeText = customer_record.getFieldText('partner'); //Customer Franchisee Text
+                accounts_email = customer_record.getFieldValue('email'); //Customer Accounts Email
                 if (isNullorEmpty(accounts_email)) {
                     accounts_email = '';
                 }
-                accounts_phone = customer_record.getFieldValue('altphone');
+                accounts_phone = customer_record.getFieldValue('altphone'); // Customer Accounts Phone
                 if (isNullorEmpty(accounts_phone)) {
                     accounts_phone = '';
                 }
-                daytodayemail = customer_record.getFieldValue('custentity_email_service');
+                daytodayemail = customer_record.getFieldValue('custentity_email_service'); // Customer Day-to-day Email
                 if (isNullorEmpty(daytodayemail)) {
                     daytodayemail = '';
                 }
-                daytodayphone = customer_record.getFieldValue('phone');
+                daytodayphone = customer_record.getFieldValue('phone'); // Customer Day-to-day Phone
                 if (isNullorEmpty(daytodayphone)) {
                     daytodayphone = '';
                 }
-                ap_mail_parcel = customer_record.getFieldValue('custentity_ap_mail_parcel');
-                using_express_post = customer_record.getFieldValue('custentity_customer_express_post');
-                using_local_couriers = customer_record.getFieldValue('custentity_customer_local_couriers');
-                using_po_box = customer_record.getFieldValue('custentity_customer_po_box');
-                bank_visit = customer_record.getFieldValue('custentity_customer_bank_visit');
-                ap_outlet = customer_record.getFieldValue('custentity_ap_outlet');
-                lpo_customer = customer_record.getFieldValue('custentity_ap_lpo_customer');
-                classify_lead = customer_record.getFieldValue('custentity_lead_type');
-                customer_status = customer_record.getFieldText('entitystatus');
-                customer_status_id = customer_record.getFieldValue('entitystatus');
-                lead_source = customer_record.getFieldValue('leadsource');
-                lead_source_text = customer_record.getFieldValue('leadsource');
-                previous_zee = customer_record.getFieldValue('custentity_previous_zee');
-                previous_zee_text = customer_record.getFieldText('custentity_previous_zee');
-                customer_industry = customer_record.getFieldValue('custentity_industry_category');
-                multisite = customer_record.getFieldValue('custentity_category_multisite');
-                pricing_notes = customer_record.getFieldValue('custentity_customer_pricing_notes');
-                zee_visit_notes = customer_record.getFieldValue('custentity_mp_toll_zeevisit_memo');
-                zee_visit = customer_record.getFieldValue('custentity_mp_toll_zeevisit');
-                ampo_price = customer_record.getFieldValue('custentity_ampo_service_price');
-                ampo_time = customer_record.getFieldValue('custentity_ampo_service_time');
-                pmpo_price = customer_record.getFieldValue('custentity_pmpo_service_price');
-                pmpo_time = customer_record.getFieldValue('custentity_pmpo_service_time');
+
+                ap_mail_parcel = customer_record.getFieldValue('custentity_ap_mail_parcel'); // Customer Using AusPost for Mail & Parcel
+                using_express_post = customer_record.getFieldValue('custentity_customer_express_post'); // Customer Using Express Post
+                using_local_couriers = customer_record.getFieldValue('custentity_customer_local_couriers'); // Customer Using Local Couriers
+                using_po_box = customer_record.getFieldValue('custentity_customer_po_box'); // Customer Using PO Box
+                bank_visit = customer_record.getFieldValue('custentity_customer_bank_visit'); // Customer Bank Visit
+                ap_outlet = customer_record.getFieldValue('custentity_ap_outlet'); //Customer Using AusPost Outlet
+                lpo_customer = customer_record.getFieldValue('custentity_ap_lpo_customer'); // Customer AusPost LPO Customer
+                classify_lead = customer_record.getFieldValue('custentity_lead_type'); // Customer Lead Type
+                customer_status = customer_record.getFieldText('entitystatus'); // Customer Status Text
+                customer_status_id = customer_record.getFieldValue('entitystatus'); // Customer Status ID
+                lead_source = customer_record.getFieldValue('leadsource'); //Customer Lead Source ID
+                lead_source_text = customer_record.getFieldValue('leadsource'); // Customer Lead Source Text
+                previous_zee = customer_record.getFieldValue('custentity_previous_zee'); //Customer Previous Franchisee ID
+                previous_zee_text = customer_record.getFieldText('custentity_previous_zee'); //Customer Previous Franchisee Text
+                customer_industry = customer_record.getFieldValue('custentity_industry_category'); //Customer Category
+                multisite = customer_record.getFieldValue('custentity_category_multisite'); //Customer Multisite
+                pricing_notes = customer_record.getFieldValue('custentity_customer_pricing_notes'); //Customer Pricing Notes
+                zee_visit_notes = customer_record.getFieldValue('custentity_mp_toll_zeevisit_memo'); //Customer Franchisee Visit Memo
+                zee_visit = customer_record.getFieldValue('custentity_mp_toll_zeevisit'); //Customer Visited by Franchisee
+                ampo_price = customer_record.getFieldValue('custentity_ampo_service_price'); //Customer AMPO Price
+                ampo_time = customer_record.getFieldValue('custentity_ampo_service_time'); //Customer AMPO Time
+                pmpo_price = customer_record.getFieldValue('custentity_pmpo_service_price'); //Customer PMPO Price
+                pmpo_time = customer_record.getFieldValue('custentity_pmpo_service_time'); //Customer PMPO Time
 
                 //MPEX SECTION
-                min_dl = customer_record.getFieldValue('custentity_mpex_dl_float');
-                min_b4 = customer_record.getFieldValue('custentity_mpex_b4_float');
-                min_1kg = customer_record.getFieldValue('custentity_mpex_1kg_float');
-                min_c5 = customer_record.getFieldValue('custentity_mpex_c5_float');
-                min_3kg = customer_record.getFieldValue('custentity_mpex_3kg_float');
-                min_5kg = customer_record.getFieldValue('custentity_mpex_5kg_float');
-                total_1kg = customer_record.getFieldValue('custentity_mpen');
-                total_3kg = customer_record.getFieldValue('custentity_mpet');
-                total_5kg = customer_record.getFieldValue('custentity_mpef');
-                total_b4 = customer_record.getFieldValue('custentity_mpeb');
-                total_c5 = customer_record.getFieldValue('custentity_mpec');
-                total_dl = customer_record.getFieldValue('custentity_mped');
-                mpex_drop_notified = customer_record.getFieldValue('custentity_mpex_drop_notified');
+                min_dl = customer_record.getFieldValue('custentity_mpex_dl_float'); //Customer Min DL Float
+                min_b4 = customer_record.getFieldValue('custentity_mpex_b4_float'); //Customer Min B4 Float 
+                min_c5 = customer_record.getFieldValue('custentity_mpex_c5_float'); //Customer Min C5 Float
+                min_1kg = customer_record.getFieldValue('custentity_mpex_1kg_float'); //Customer Min 1Kg Float
+                min_3kg = customer_record.getFieldValue('custentity_mpex_3kg_float'); //Customer Min 3kg Float
+                min_5kg = customer_record.getFieldValue('custentity_mpex_5kg_float'); //Customer Min 5Kg Float
+                total_1kg = customer_record.getFieldValue('custentity_mpen'); //Customer Total 1Kg Stock at customer location
+                total_3kg = customer_record.getFieldValue('custentity_mpet'); //Customer Total 3Kg Stock at customer location
+                total_5kg = customer_record.getFieldValue('custentity_mpef'); //Customer Total 5Kg Stock at customer location
+                total_b4 = customer_record.getFieldValue('custentity_mpeb'); //Customer Total B4 Stock at customer location
+                total_c5 = customer_record.getFieldValue('custentity_mpec'); //Customer Total C5 Stock at customer location
+                total_dl = customer_record.getFieldValue('custentity_mped'); //Customer Total DL Stock at customer location
+                mpex_drop_notified = customer_record.getFieldValue('custentity_mpex_drop_notified'); // Customer Franchisee Notified
 
+                //If empty, set field to 0
                 if (isNullorEmpty(min_dl)) {
                     min_dl = 0
                 }
@@ -238,7 +235,7 @@
                 }
 
 
-
+                //NetSuite Search: User Note Search
                 website = customer_record.getFieldValue('custentity_category_multisite_link');
 
                 var savedNoteSearch = nlapiLoadSearch('note', 'customsearch_user_note');
@@ -249,20 +246,9 @@
 
                 var resultSet_note = savedNoteSearch.runSearch();
 
-                if (role != 1000) {
-                    // var savedAPTotal = nlapiLoadSearch('customrecord_ap_stock_line_item', 'customsearch3216');
-                    // var newFilters = new Array();
-
-                    // newFilters[newFilters.length] = new nlobjSearchFilter('custrecord_ap_order_customer', 'CUSTRECORD_AP_PRODUCT_ORDER', 'is', customer_id);
-
-                    // savedAPTotal.addFilters(newFilters);
-
-                    // var resultSetAPTotal = savedAPTotal.runSearch();
-                }
-
-
                 /**
                  * Description - To get all the services associated with this customer
+                 * NetSuite Search: SALESP - Services
                  */
                 var serviceSearch = nlapiLoadSearch('customrecord_service', 'customsearch_salesp_services');
 
@@ -278,12 +264,11 @@
                 var resultSet_service_change = null;
                 var resultServiceChange = [];
 
-
+                //NetSuite Search: SALESP - Service Change
                 var searched_service_change = nlapiLoadSearch('customrecord_servicechg', 'customsearch_salesp_service_chg');
 
                 var newFilters = new Array();
                 newFilters[newFilters.length] = new nlobjSearchFilter("custrecord_service_customer", "CUSTRECORD_SERVICECHG_SERVICE", 'is', customer_id);
-
                 newFilters[newFilters.length] = new nlobjSearchFilter('custrecord_servicechg_status', null, 'noneof', [2, 3]);
 
                 searched_service_change.addFilters(newFilters);
@@ -291,8 +276,6 @@
                 resultSet_service_change = searched_service_change.runSearch();
 
                 resultServiceChange = resultSet_service_change.getResults(0, 1);
-
-
             }
 
 
@@ -301,15 +284,12 @@
             inlineHtml += '<div class="container" style="padding-top: 3%;"><div id="alert" class="alert alert-danger fade in"></div>';
 
             if (role == 1000) {
-
-
                 var resultSetZees = null;
             } else {
+                //NetSuite Search: SALESP - Franchisees
                 var searchZees = nlapiLoadSearch('partner', 'customsearch_salesp_franchisee');
-
                 var resultSetZees = searchZees.runSearch();
             }
-
 
             inlineHtml += '<input id="customer_id" class="form-control" required value="' + customer_id + '" type="hidden"/></div></div>';
 
@@ -319,16 +299,15 @@
 
             inlineHtml += '<input id="zee_id" class="form-control" required value="' + zee + '" type="hidden"/></div></div>';
 
-
             var resultSetContacts = null;
             var resultSetAddresses = null;
 
             if (!isNullorEmpty(customer_id)) {
-
+                //NetSuite Search: SALESP - Addresses
                 var searched_addresses = nlapiLoadSearch('customer', 'customsearch_salesp_address');
+
                 var newFilters = new Array();
                 newFilters[newFilters.length] = new nlobjSearchFilter('internalid', null, 'anyof', customer_id);
-
 
                 searched_addresses.addFilters(newFilters);
 
@@ -336,7 +315,9 @@
 
                 var serviceAddressResult = resultSetAddresses.getResults(0, 1);
 
+                //NetSuite Search: SALESP - Contacts
                 var searched_contacts = nlapiLoadSearch('contact', 'customsearch_salesp_contacts');
+
                 var newFilters_contact = new Array();
                 newFilters_contact[newFilters_contact.length] = new nlobjSearchFilter('internalid', 'CUSTOMER', 'is', customer_id);
                 newFilters_contact[newFilters_contact.length] = new nlobjSearchFilter('isinactive', null, 'is', 'F');
@@ -355,7 +336,7 @@
             //Address and Contacts Details
             inlineHtml += addressContactsSection(resultSetAddresses, resultSetContacts);
 
-
+            //Show the Tabs only if Address has been created
             if (!isNullorEmpty(serviceAddressResult)) {
                 if (serviceAddressResult.length > 0) {
                     inlineHtml += '<div class="tabs" style="font-size: xx-small;"><ul class="nav nav-tabs nav-justified" style="padding-top: 3%;">';
@@ -396,14 +377,15 @@
 
                             //For the AP Tab
                             tab_content += '<div role="tabpanel" class="tab-pane" id="ap">';
-                            // tab_content += apTotol(resultSetAPTotal);
+                            // tab_content += apTotol(resultSetAPTotal); Commented because permission issue with few roles
                             tab_content += '</div>';
                         }
                     }
 
+                    //If role is not a Franchisee
                     if (role != 1000) {
                         tab_content += '<div role="tabpanel" class="tab-pane" id="notes">';
-                        //User Notes
+                        //User Notes Tab
                         tab_content += userNote(resultSet_note);
                         tab_content += '</div>';
                     }
@@ -416,35 +398,26 @@
                 }
             }
 
-            // if (customer_status_id == 13 || customer_status_id == 32) {
-            //     if (!isNullorEmpty(serviceContactResult) && !isNullorEmpty(serviceAddressResult)) {
-            //         if (serviceContactResult.length > 0 && serviceAddressResult.length > 0) {
-            //             inlineHtml += '<div class="form-group container">';
-            //             inlineHtml += '<div class="row">';
-            //             inlineHtml += '<div class="col-xs-4 sendinfo"><input type="button" id="sendinfo" class="form-control sendinfo btn btn-success" value="INVITE TO PORTAL" onclick="onclick_SendEmail();"/></div>';
-            //             // inlineQty += '<div class="col-xs-2 sendquote"><input type="button" id="sendquote" class="form-control sendquote btn btn-warning" value="SEND QUOTE" onclick="onclick_SendQuote()"/></div>';
-            //             // inlineQty += '<div class="col-xs-2 sendforms"><input type="button" id="sendforms" class="form-control sendforms btn btn-warning" value="SEND FORMS" onclick="onclick_SendForms()"/></div>';
-            //             inlineHtml += '</div>';
-            //             inlineHtml += '</div>';
-            //         }
-            //     }
-            // }
-
-
             form.addField('preview_table', 'inlinehtml', '').setLayoutType('outsidebelow', 'startrow').setDefaultValue(inlineHtml);
+            
+            //Show Save button only if atleast 1 Address is create
             if (!isNullorEmpty(serviceAddressResult)) {
                 if (serviceAddressResult.length > 0) {
                     form.addSubmitButton('SAVE');
                 }
             }
+
+            //Show the buttons only if customer status is Customer - Signed or Customer - Free Trial
             if (customer_status_id == 13 || customer_status_id == 32) {
+                //Show Send Email button if Contacts and Address is present
                 if (!isNullorEmpty(serviceContactResult) && !isNullorEmpty(serviceAddressResult)) {
                     if (serviceContactResult.length > 0 && serviceAddressResult.length > 0) {
                         form.addButton('back', 'SEND EMAIL', 'onclick_SendEmail()');
                     }
                 }
+                form.addButton('back', 'Back', 'onclick_back()');
             }
-            form.addButton('back', 'Back', 'onclick_back()');
+            
             form.setScript('customscript_cl_lead_capture');
             response.writePage(form);
         } else {
@@ -456,21 +429,24 @@
             var auto_allocate = request.getParameter('custpage_auto_allocate');
             var customer_id = parseInt(request.getParameter('customer_id'));
 
+            //Loca the Customer Record
             var customer_record = nlapiLoadRecord('customer', customer_id);
             var entity_id = customer_record.getFieldValue('entityid');
             var customer_name = customer_record.getFieldValue('companyname');
             var customer_list = customer_record.getFieldValue('customer_list');
+            var customer_status_id = customer_record.getFieldValue('entitystatus');
 
-            nlapiLogExecution('DEBUG', 'auto_allocate', auto_allocate);
-
-            var customer_record = nlapiLoadRecord('customer', customer_id);
-            customer_status_id = customer_record.getFieldValue('entitystatus');
-
+            //If Customer status not Customer - Signed
             if (customer_status_id != 13) {
+                //If User is not Raine OR Auto Allocate is set to YES OR Not coming from the Customer List Page
                 if (ctx.getUser() != 696992 && auto_allocate == 1 && customer_list != 'T') {
+                    //If Customer Status is SUSPECT - Hot Lead
                     if (status_id == '57') {
+                        //Load Franchisee Record
                         var zeeRecord = nlapiLoadRecord('partner', partner_id);
-                        var salesRep = zeeRecord.getFieldValue('custentity_sales_rep_assigned');
+                        var salesRep = zeeRecord.getFieldValue('custentity_sales_rep_assigned'); //Franchisee Sales Rep Assigned
+
+                        //Create Sales Record
                         var recordtoCreate = nlapiCreateRecord('customrecord_sales');
                         var date2 = new Date();
                         var subject = '';
@@ -498,12 +474,15 @@
 
                         nlapiSubmitRecord(recordtoCreate);
 
+                        //Send email to assigned Sales Rep on the Franchisee Record
                         nlapiSendEmail(112209, salesRep, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au']);
 
                     } else {
+                        //Load Franchisee Record
                         var zeeRecord = nlapiLoadRecord('partner', partner_id);
                         var salesRep = zeeRecord.getFieldValue('custentity_sales_rep_assigned');
 
+                        //Create Sales Record
                         var recordtoCreate = nlapiCreateRecord('customrecord_sales');
                         var date2 = new Date();
                         var subject = '';
@@ -534,21 +513,25 @@
 
                         nlapiSubmitRecord(recordtoCreate);
 
+                        //Send Email to Sales Rep assigned to the Franchisee Record
                         nlapiSendEmail(112209, salesRep, 'Sales Lead - ' + entity_id + ' ' + customer_name, body);
                     }
                 }
             }
 
 
-            if (customer_status_id == 13) {
+            if (customer_status_id == 13) { //If customer Status is Customer - Signed redirect to ther Customer List Page
                 nlapiSetRedirectURL('SUITELET', 'customscript_sl_customer_list', 'customdeploy_sl_customer_list', null, null);
-            } else {
+            } else { //If new lead created, redirect the Lead Capture Form
                 nlapiSetRedirectURL('SUITELET', 'customscript_sl_lead_capture', 'customdeploy_sl_lead_capture', null, null);
             }
 
         }
     }
 
+    /*
+        Creates the Customer Details Section of the Page
+     */
     function customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, previous_zee, customer_industry, lead_source_text, customer_status_id) {
         var inlineQty = '<div class="form-group container company_name_section">';
         inlineQty += '<div class="row">';
@@ -568,6 +551,8 @@
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-6 company_name"><div class="input-group"><span class="input-group-addon" id="company_name_text">COMPANY NAME <span class="mandatory">*</span></span><input id="company_name" class="form-control company_name" required value="' + companyName + '" data-oldvalue="' + companyName + '" /></div></div>';
         inlineQty += '<div class="col-xs-6 industry"><div class="input-group"><span class="input-group-addon" id="industry_text">INDUSTRY <span class="mandatory">*</span></span><select id="industry" class="form-control industry"><option value="19">OTHER SERVICES</option>';
+        
+        //Create Search for Industry Category
         var columns = new Array();
         columns[0] = new nlobjSearchColumn('name');
         columns[1] = new nlobjSearchColumn('internalId');
@@ -594,10 +579,12 @@
         inlineQty += '<div class="form-group container abn_section">';
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-6 abn"><div class="input-group"><span class="input-group-addon" id="abn_text">ABN </span><input id="abn" class="form-control abn" value="' + abn + '" data-oldvalue="' + abn + '"/></div></div>';
+        
         if (isNullorEmpty(customer_status_id)) {
             customer_status = 'SUSPECT - New'
         }
 
+        //If Role is not Franchisee, customer status can be SUSPECT - New or SUSPECT - Hot Lead
         if (role != 1000) {
             inlineQty += '<div class="col-xs-6 status"><div class="input-group"><span class="input-group-addon" id="status_text">STATUS <span class="mandatory">*</span></span>';
             if (customer_status_id == 13 || customer_status_id == 32) {
@@ -620,6 +607,7 @@
 
 
         } else {
+            //For Franchisees, the status of custoemr is always SUSPECT - New
             inlineQty += '<div class="col-xs-6 status"><div class="input-group"><span class="input-group-addon" id="status_text">STATUS <span class="mandatory">*</span></span><select id="status" class="form-control status" readonly><option value="' + 6 + '" selected>SUSPECT - New</option>';
 
         }
@@ -630,11 +618,14 @@
         inlineQty += '<div class="form-group container zee_section">';
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-6 zee"><div class="input-group"><span class="input-group-addon" id="zee_text">FRANCHISEE <span class="mandatory">*</span></span>';
+        
         if (role == 1000) {
+            //For Franchisee role, Franchisee field is preselected
             var zee_record = nlapiLoadRecord('partner', zee);
             var zee_name = zee_record.getFieldValue('companyname')
             inlineQty += '<select id="zee" readonly class="form-control zee" ><option value="' + zee + '" selected>' + zee_name + '</option>';
         } else {
+            //For all other roles, Franchisee is chosen
             inlineQty += '<select id="zee" class="form-control zee" ><option value=0></option>';
             resultSetZees.forEachResult(function(searchResultZees) {
 
@@ -657,37 +648,16 @@
 
         }
 
-
         inlineQty += '</select></div></div>';
         inlineQty += '<div class="col-xs-6 leadsource_div"><div class="input-group"><span class="input-group-addon" id="leadsource_text">LEAD SOURCE <span class="mandatory">*</span></span>';
 
-        // var campaignSearch = search.create({
-        //  type: search.Type.CAMPAIGN,
-        //  title: 'LEAD SOURCE',
-        //  id: 'customsearch_lead_source',
-        //  columns: [{
-        //      name: 'internalId'
-        //  }, {
-        //      name: 'title'
-        //  }]
-        // });
-
-        // campaignSearch.save();
-        // var campaignSearch = search.load({
-        //  id: 'customsearch_lead_source'
-        // });
-        // campaignSearch.run().each(function(searchResult) {
-
-        //  var listValue = searchResult.getValue('title');
-        //  // var listID = searchResult.getValue('internalId');
-        //  inlineQty += '<option value="">' + listValue + '</option>';
-        //  return true;
-        // });
-        // 
+       //NetSuite Search: LEAD SOURCE
         var searched_lead_source = nlapiLoadSearch('campaign', 'customsearch_lead_source');
         resultSetLeadSource = searched_lead_source.runSearch();
 
+        //If Role is Franchisee
         if (role == 1000) {
+            //If franchisee is Brisbane, Lead Source is preselected Field Sales - Wendie
             if (zee != 696179) {
                 inlineQty += '<select id="leadsource" class="form-control leadsource" readonly ><option value="-4"  selected>Franchisee Generated</option>';
             } else {
@@ -695,6 +665,7 @@
             }
 
         } else {
+            //Lead Source is selected
             inlineQty += '<select id="leadsource" class="form-control leadsource" ><option></option>';
             resultSetLeadSource.forEachResult(function(searchResultLeadSource) {
 
@@ -765,6 +736,9 @@
 
     }
 
+    /*
+        Creates the Address & Contacts Section of the Page
+     */
     function addressContactsSection(resultSetAddresses, resultSetContacts) {
         var inlineQty = '<div class="form-group container company_name_section">';
         inlineQty += '<div class="row">';
@@ -862,6 +836,9 @@
         return inlineQty;
     }
 
+    /*
+        Create AP Tab
+     */
     function apTotol(resultSetAPTotal) {
         var inlineQty = '<div class="form-group container pricing_notes">';
         inlineQty += '<div class="row">';
@@ -888,6 +865,9 @@
         return inlineQty;
     }
 
+    /*
+        Create MPEX Tab
+     */
     function mpexTab(min_c5, min_dl, min_b4, min_1kg, min_3kg, min_5kg, total_b4, total_c5, total_dl, total_1kg, total_3kg, total_5kg, mpex_drop_notified, serviceContactResult, serviceAddressResult) {
 
         var inlineQty = '<div class="form-group container company_name_section">';
@@ -932,6 +912,7 @@
             inlineQty += '<div class="col-xs-3 sendemail"><input type="button" value="NOTIFY FRANCHISEE" class="form-control btn btn-primary" id="sendemail" style="background-color: #008657;"/></div>';
         }
 
+        //Show buttons only is Address & Contact is created 
         if (!isNullorEmpty(serviceContactResult) && !isNullorEmpty(serviceAddressResult)) {
             if (serviceContactResult.length > 0 && serviceAddressResult.length > 0) {
                 inlineQty += '<div class="col-xs-3 "><input type="button" id="invitetoportal" class="form-control invitetoportal btn btn-success" value="INVITE TO PORTAL" onclick="onclick_InviteEmail();" style="background-color: #fdce0e;"/></div>';
@@ -987,6 +968,9 @@
         return inlineQty;
     }
 
+    /*
+        Create the Survey Tab
+     */
     function surveyInfo(ap_mail_parcel, ap_outlet, lpo_customer, multisite, website, zee_visit_notes, zee_visit, ap_mail_parcel, ap_outlet, lpo_customer, using_express_post, using_local_couriers, using_po_box, bank_visit, classify_lead) {
 
         var columns = new Array();
@@ -1227,6 +1211,9 @@
 
     }
 
+    /*
+        Create the Service Details Tab
+     */
     function serviceDetailsSection(pricing_notes, ampo_price, ampo_time, pmpo_price, pmpo_time) {
 
         var inlineQty = '';
@@ -1347,6 +1334,9 @@
         return inlineQty;
     }
 
+    /*
+        Create the User Notes Tab
+     */
     function userNote(savedNoteSearch) {
 
         var inlineQty = '<div class="form-group container reviewaddress_section">';
