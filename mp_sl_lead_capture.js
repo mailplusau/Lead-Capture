@@ -51,7 +51,9 @@
             var customer_status_id = '';
             var lead_source = '';
             var lead_source_text = '';
-            var previous_zee = 0;
+            var old_zee = '';
+            var old_zee_text = '';
+            var old_customer = '';
             var customer_industry = '';
             var multisite = '';
             var website = '';
@@ -148,8 +150,9 @@
                 customer_status_id = customer_record.getFieldValue('entitystatus'); // Customer Status ID
                 lead_source = customer_record.getFieldValue('leadsource'); //Customer Lead Source ID
                 lead_source_text = customer_record.getFieldValue('leadsource'); // Customer Lead Source Text
-                previous_zee = customer_record.getFieldValue('custentity_previous_zee'); //Customer Previous Franchisee ID
-                previous_zee_text = customer_record.getFieldText('custentity_previous_zee'); //Customer Previous Franchisee Text
+                old_zee = customer_record.getFieldValue('custentity_old_zee'); //Customer Old Franchisee ID
+                old_zee_text = customer_record.getFieldText('custentity_old_zee'); //Customer Old Franchisee Text
+                old_customer = customer_record.getFieldValue('custentity_old_customer'); //Old Customer ID
                 customer_industry = customer_record.getFieldValue('custentity_industry_category'); //Customer Category
                 multisite = customer_record.getFieldValue('custentity_category_multisite'); //Customer Multisite
                 pricing_notes = customer_record.getFieldValue('custentity_customer_pricing_notes'); //Customer Pricing Notes
@@ -331,7 +334,7 @@
 
 
             //Customer Details
-            inlineHtml += customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, previous_zee, customer_industry, lead_source_text, customer_status_id);
+            inlineHtml += customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, old_zee, old_zee_text, old_customer, customer_industry, lead_source_text, customer_status_id);
 
             //Address and Contacts Details
             inlineHtml += addressContactsSection(resultSetAddresses, resultSetContacts);
@@ -399,7 +402,7 @@
             }
 
             form.addField('preview_table', 'inlinehtml', '').setLayoutType('outsidebelow', 'startrow').setDefaultValue(inlineHtml);
-            
+
             //Show Save button only if atleast 1 Address is create
             if (!isNullorEmpty(serviceAddressResult)) {
                 if (serviceAddressResult.length > 0) {
@@ -417,7 +420,7 @@
                 }
                 form.addButton('back', 'Back', 'onclick_back()');
             }
-            
+
             form.setScript('customscript_cl_lead_capture');
             response.writePage(form);
         } else {
@@ -532,7 +535,7 @@
     /*
         Creates the Customer Details Section of the Page
      */
-    function customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, previous_zee, customer_industry, lead_source_text, customer_status_id) {
+    function customerDetailsSection(entityid, companyName, abn, resultSetZees, zee, accounts_email, daytodayphone, daytodayemail, accounts_phone, customer_status, lead_source, old_zee, old_zee_text, old_customer, customer_industry, lead_source_text, customer_status_id) {
         var inlineQty = '<div class="form-group container company_name_section">';
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">CUSTOMER DETAILS</span></h4></div>';
@@ -551,7 +554,7 @@
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-6 company_name"><div class="input-group"><span class="input-group-addon" id="company_name_text">COMPANY NAME <span class="mandatory">*</span></span><input id="company_name" class="form-control company_name" required value="' + companyName + '" data-oldvalue="' + companyName + '" /></div></div>';
         inlineQty += '<div class="col-xs-6 industry"><div class="input-group"><span class="input-group-addon" id="industry_text">INDUSTRY <span class="mandatory">*</span></span><select id="industry" class="form-control industry"><option value="19">OTHER SERVICES</option>';
-        
+
         //Create Search for Industry Category
         var columns = new Array();
         columns[0] = new nlobjSearchColumn('name');
@@ -579,7 +582,7 @@
         inlineQty += '<div class="form-group container abn_section">';
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-6 abn"><div class="input-group"><span class="input-group-addon" id="abn_text">ABN </span><input id="abn" class="form-control abn" value="' + abn + '" data-oldvalue="' + abn + '"/></div></div>';
-        
+
         if (isNullorEmpty(customer_status_id)) {
             customer_status = 'SUSPECT - New'
         }
@@ -618,7 +621,7 @@
         inlineQty += '<div class="form-group container zee_section">';
         inlineQty += '<div class="row">';
         inlineQty += '<div class="col-xs-6 zee"><div class="input-group"><span class="input-group-addon" id="zee_text">FRANCHISEE <span class="mandatory">*</span></span>';
-        
+
         if (role == 1000) {
             //For Franchisee role, Franchisee field is preselected
             var zee_record = nlapiLoadRecord('partner', zee);
@@ -651,7 +654,7 @@
         inlineQty += '</select></div></div>';
         inlineQty += '<div class="col-xs-6 leadsource_div"><div class="input-group"><span class="input-group-addon" id="leadsource_text">LEAD SOURCE <span class="mandatory">*</span></span>';
 
-       //NetSuite Search: LEAD SOURCE
+        //NetSuite Search: LEAD SOURCE
         var searched_lead_source = nlapiLoadSearch('campaign', 'customsearch_lead_source');
         resultSetLeadSource = searched_lead_source.runSearch();
 
@@ -693,24 +696,9 @@
 
             inlineQty += '<div class="form-group container relocation_section hide">';
             inlineQty += '<div class="row">';
-            inlineQty += '<div class="col-xs-6 previous_zee"><div class="input-group"><span class="input-group-addon" id="zee_text"> PREVIOUS FRANCHISEE <span/* class="mandatory"*/>*</span></span>';
-            inlineQty += '<select id="previous_zee" class="form-control previous_zee" ><option value=0></option>';
-            resultSetZees.forEachResult(function(searchResultZees) {
-
-                zeeId = searchResultZees.getValue('internalid');
-                zeeName = searchResultZees.getValue('companyname');
-
-                if (zeeId == previous_zee) {
-                    inlineQty += '<option value="' + zeeId + '" selected>' + zeeName + '</option>';
-                } else {
-                    inlineQty += '<option value="' + zeeId + '">' + zeeName + '</option>';
-                }
-
-                return true;
-            });
-
-            inlineQty += '</select></div></div>';
-            inlineQty += '<div class="col-xs-6"></div>';
+            inlineQty += '<div class="col-xs-6 old_zee"><div class="input-group"><span class="input-group-addon" id="zee_text">OLD FRANCHISEE</span><input id="old_zee" class="form-control old_cust" value="' + old_zee_text + '" data-oldvalue="' + old_zee_text + '" data-id="' + old_zee + '" readonly/>';
+            inlineQty += '</div></div>';
+            inlineQty += '<div class="col-xs-6"><div class="input-group"><span class="input-group-addon" id="cust_text">OLD CUSTOMER</span><input id="old_cust" type="number" class="form-control old_cust" value="' + old_customer + '" data-oldvalue="' + old_customer + '"/></div></div>';
             inlineQty += '</div>';
             inlineQty += '</div>';
         }
