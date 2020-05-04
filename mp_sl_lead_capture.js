@@ -678,7 +678,13 @@
                 if (leadsourceid == lead_source) {
                     inlineQty += '<option value="' + leadsourceid + '" selected>' + leadsourcename + '</option>';
                 } else {
-                    inlineQty += '<option value="' + leadsourceid + '" >' + leadsourcename + '</option>';
+                    if (leadsourceid == 202599 || leadsourceid == 217602) {
+                        if (role == 1032) { //only Data System Coordinateur can enter a Change of Entity or a Relocation
+                            inlineQty += '<option value="' + leadsourceid + '" >' + leadsourcename + '</option>';
+                        }
+                    } else {
+                        inlineQty += '<option value="' + leadsourceid + '" >' + leadsourcename + '</option>';
+                    }
                 }
 
                 return true;
@@ -692,7 +698,7 @@
         inlineQty += '</div>';
         inlineQty += '</div>';
 
-        if (role != 1000) {
+        if (role == 1032) {
 
             inlineQty += '<div class="form-group container relocation_section hide">';
             inlineQty += '<div class="row">';
