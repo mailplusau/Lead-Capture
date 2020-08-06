@@ -47,7 +47,7 @@ function pageInit() {
         cust_inactive = true;
     }
     if (role != 1000) {
-        if ($('#leadsource option:selected').val() == 202599) { //Relocation
+        if ($('#leadsource option:selected').val() == 202599 || $('#leadsource option:selected').val() == 217602) { //Relocation or COE
             $('.relocation_section').removeClass('hide');
         }
     }
@@ -119,11 +119,12 @@ $(document).on("change", ".zee_dropdown", function(e) {
 $(document).on("change", "#leadsource", function(e) {
     var lead_source = $('#leadsource option:selected').val();
     console.log('lead_source', lead_source);
-    if (lead_source == 202599) { //Relocation
+    if (lead_source == 202599 || lead_source == 217602) { //Relocation
         $('.relocation_section').removeClass('hide');
     } else {
         $('.relocation_section').addClass('hide');
-        $('#previous_zee option:selected').val(0);
+        $('#old_zee').val('');
+        $('#old_cust').val('');
     }
 });
 
@@ -235,6 +236,15 @@ $(document).on('click', '#reviewaddress', function(event) {
     var upload_url = baseURL + nlapiResolveURL('suitelet', 'customscript_sl_new_address_module', 'customdeploy_sl_new_address_module') + '&params=' + params;
     window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
 
+});
+
+//On change of Old Customer ID
+$(document).on('change', '#old_cust', function() {
+    var old_zee = nlapiLookupField('customer', $('#old_cust').val(), 'partner');
+    var old_zee_text = nlapiLookupField('customer', $('#old_cust').val(), 'partner', true);
+    console.log('old_zee', old_zee);
+    $('#old_zee').val(old_zee_text);
+    $('#old_zee').attr('data-id', old_zee);
 });
 
 //On click of Send Email Button
@@ -425,6 +435,13 @@ function saveRecord(context) {
     cust_inactive = true;
     customer_id = createUpdateCustomer(customer_id);
 
+    if ($('#leadsource option:selected').val() == 202599 || $('#leadsource option:selected').val() == 217602) {
+        console.log('old_cust', $('#old_cust').val());
+        var old_customer_record = nlapiLoadRecord('customer', $('#old_cust').val());
+        old_customer_record.setFieldValue('custentity_new_customer', customer_id);
+        old_customer_record.setFieldValue('custentity_new_zee', $('#zee option:selected').val());
+        nlapiSubmitRecord(old_customer_record);
+    }
     return true;
 }
 
@@ -548,8 +565,8 @@ function createUpdateCustomer(customer_id, update_status, create_contact) {
 
         var customerRecord = nlapiLoadRecord('customer', customer_id);
         customerRecord.setFieldValue('entitystatus', $('#status option:selected').val());
-       
-       //If not coming from the Customer List Page, update Customer Date - Lead Entered field
+
+        //If not coming from the Customer List Page, update Customer Date - Lead Entered field
         if (isNullorEmpty(nlapiGetFieldValue('customer_list'))) {
             customerRecord.setFieldValue('custentity_date_lead_entered', getDate());
         }
@@ -573,8 +590,11 @@ function createUpdateCustomer(customer_id, update_status, create_contact) {
         }
 
     }
-    
-    if ($('#previous_zee option:selected').val() != $('#previous_zee').attr('data-oldvalue')) {
+
+    if ($('#old_zee option:selected').val() != $('#old_zee').attr('data-oldvalue')) {
+        update_required = true;
+    }
+    if ($('#old_cust').val() != $('#old_cust').attr('data-oldvalue')) {
         update_required = true;
     }
 
@@ -697,11 +717,8 @@ function createUpdateCustomer(customer_id, update_status, create_contact) {
             customerRecord.setFieldValue('phone', '1300656595');
         }
         customerRecord.setFieldValue('leadsource', $('#leadsource option:selected').val());
-        if (($('#previous_zee option:selected').val()) != 0) {
-            customerRecord.setFieldValue('custentity_previous_zee', $('#previous_zee option:selected').val());
-        } else {
-            customerRecord.setFieldValue('custentity_previous_zee', '');
-        }
+        customerRecord.setFieldValue('custentity_old_zee', $('#old_zee').attr('data-id'));
+        customerRecord.setFieldValue('custentity_old_customer', $('#old_cust').val());
         customerRecord.setFieldValue('leadsource', $('#leadsource option:selected').val());
         customerRecord.setFieldValue('custentity_customer_pricing_notes', $('#pricing_notes').val());
         customerRecord.setFieldValue('custentity_ampo_service_price', $('#ampo_price').val());
