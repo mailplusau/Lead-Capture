@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-04-24 12:06:26
+     * @Last Modified time: 2020-08-25 11:23:50
      *
      */
 
@@ -178,6 +178,22 @@
                 total_dl = customer_record.getFieldValue('custentity_mped'); //Customer Total DL Stock at customer location
                 mpex_drop_notified = customer_record.getFieldValue('custentity_mpex_drop_notified'); // Customer Franchisee Notified
 
+                var mpex_1kg = customer_record.getFieldText("custentity_mpex_1kg_price_point");
+                var mpex_3kg = customer_record.getFieldText("custentity_mpex_3kg_price_point");
+                var mpex_5kg = customer_record.getFieldText("custentity_mpex_5kg_price_point");
+                var mpex_500g = customer_record.getFieldText("custentity_mpex_500g_price_point");
+                var mpex_b4 = customer_record.getFieldText("custentity_mpex_b4_price_point");
+                var mpex_c5 = customer_record.getFieldText("custentity_mpex_c5_price_point");
+                var mpex_dl = customer_record.getFieldText("custentity_mpex_dl_price_point");
+                var mpex_1kg_new = customer_record.getFieldValue("custentity_mpex_1kg_price_point_new");
+                var mpex_3kg_new = customer_record.getFieldValue("custentity_mpex_3kg_price_point_new");
+                var mpex_5kg_new = customer_record.getFieldValue("custentity_mpex_5kg_price_point_new");
+                var mpex_500g_new = customer_record.getFieldValue("custentity_mpex_500g_price_point_new");
+                var mpex_b4_new = customer_record.getFieldValue("custentity_mpex_b4_price_point_new");
+                var mpex_c5_new = customer_record.getFieldValue("custentity_mpex_c5_price_point_new");
+                var mpex_dl_new = customer_record.getFieldValue("custentity_mpex_dl_price_point_new");
+                var mpex_start_date = customer_record.getFieldValue("custentity_mpex_price_point_start_date");
+
                 //If empty, set field to 0
                 if (isNullorEmpty(min_dl)) {
                     min_dl = 0
@@ -282,7 +298,7 @@
             }
 
 
-            var inlineHtml = '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="//code.jquery.com/jquery-1.11.0.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css"><script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script><link href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet"><script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script><link rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2060796&c=1048144&h=9ee6accfd476c9cae718&_xt=.css"/><script src="https://1048144.app.netsuite.com/core/media/media.nl?id=2060797&c=1048144&h=ef2cda20731d146b5e98&_xt=.js"></script><link type="text/css" rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2090583&c=1048144&h=a0ef6ac4e28f91203dfe&_xt=.css"><style>.mandatory{color:red;}</style>';
+            var inlineHtml = '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"><script src="//code.jquery.com/jquery-1.11.0.min.js"></script><link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css"><link href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet"><script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script><link rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2060796&c=1048144&h=9ee6accfd476c9cae718&_xt=.css"/><script src="https://1048144.app.netsuite.com/core/media/media.nl?id=2060797&c=1048144&h=ef2cda20731d146b5e98&_xt=.js"></script><link type="text/css" rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2090583&c=1048144&h=a0ef6ac4e28f91203dfe&_xt=.css">';
 
             inlineHtml += '<div class="container" style="padding-top: 3%;"><div id="alert" class="alert alert-danger fade in"></div>';
 
@@ -345,45 +361,44 @@
                     inlineHtml += '<div class="tabs" style="font-size: xx-small;"><ul class="nav nav-tabs nav-justified" style="padding-top: 3%;">';
 
                     var tab_content = '';
-                    inlineHtml += '<li role="presentation" class="active"><a href="#services"><b>SERVICES / PRICING NOTES</b></a></li>';
+                    if (customer_status_id == 13 || customer_status_id == 32) {
+                        inlineHtml += '<li role="presentation" class="active"><a href="#mpex"><b>MPEX</b></a></li>';
+                        inlineHtml += '<li role="presentation" class=""><a href="#services"><b>SERVICES / PRICING NOTES</b></a></li>';
+                        // inlineHtml += '<li role="presentation" class=""><a href="#ap"><b>AP REVENUE</b></a></li>';
+                    } else {
+                        inlineHtml += '<li role="presentation" class="active"><a href="#services"><b>SERVICES / PRICING NOTES</b></a></li>';
+                    }
+
                     inlineHtml += '<li role="presentation" class=""><a href="#survey"><b>ADDITIONAL INFORMATION</b></a></li>';
+
                     //If User Role is not Franchisee
                     if (role != 1000) {
-                        //Customer status is Signed or Free Trial
-                        if (customer_status_id == 13 || customer_status_id == 32) {
-                            inlineHtml += '<li role="presentation" class=""><a href="#mpex"><b>MPEX</b></a></li>';
-                            inlineHtml += '<li role="presentation" class=""><a href="#ap"><b>AP REVENUE</b></a></li>';
-                        }
-
                         inlineHtml += '<li role="presentation" class=""><a href="#notes"><b>USER NOTES</b></a></li>';
                     }
                     inlineHtml += '</ul>';
 
-                    //Service Details Tab Contenet
-                    tab_content += '<div role="tabpanel" class="tab-pane active" id="services">';
-                    tab_content += serviceDetailsSection(pricing_notes);
-                    tab_content += '</div>';
+                    if (customer_status_id == 13 || customer_status_id == 32) {
+                        //For the MPEX Tab
+                        tab_content += '<div role="tabpanel" class="tab-pane active" id="mpex">';
+                        tab_content += mpexTab(min_c5, min_dl, min_b4, min_1kg, min_3kg, min_5kg, total_b4, total_c5, total_dl, total_1kg, total_3kg, total_5kg, mpex_drop_notified, serviceContactResult, serviceAddressResult, mpex_5kg, mpex_3kg, mpex_1kg, mpex_500g, mpex_b4, mpex_c5, mpex_dl, mpex_5kg_new, mpex_3kg_new, mpex_1kg_new, mpex_500g_new, mpex_b4_new, mpex_c5_new, mpex_dl_new, mpex_start_date, customer_id);
+                        tab_content += '</div>';
+
+                        //Service Details Tab Contenet
+                        tab_content += '<div role="tabpanel" class="tab-pane" id="services">';
+                        tab_content += serviceDetailsSection(pricing_notes);
+                        tab_content += '</div>';
+                    } else {
+                        //Service Details Tab Contenet
+                        tab_content += '<div role="tabpanel" class="tab-pane active" id="services">';
+                        tab_content += serviceDetailsSection(pricing_notes);
+                        tab_content += '</div>';
+                    }
+
 
                     tab_content += '<div role="tabpanel" class="tab-pane" id="survey">';
                     //Survey Questions
                     tab_content += surveyInfo(ap_mail_parcel, ap_outlet, lpo_customer, multisite, website, zee_visit_notes, zee_visit, ap_mail_parcel, ap_outlet, lpo_customer, using_express_post, using_local_couriers, using_po_box, bank_visit, classify_lead);
                     tab_content += '</div>';
-                    //If User Role is not Franchisee
-                    if (role != 1000) {
-                        //Customer status is Signed or Free Trial
-                        if (customer_status_id == 13 || customer_status_id == 32) {
-
-                            //For the MPEX Tab
-                            tab_content += '<div role="tabpanel" class="tab-pane" id="mpex">';
-                            tab_content += mpexTab(min_c5, min_dl, min_b4, min_1kg, min_3kg, min_5kg, total_b4, total_c5, total_dl, total_1kg, total_3kg, total_5kg, mpex_drop_notified, serviceContactResult, serviceAddressResult);
-                            tab_content += '</div>';
-
-                            //For the AP Tab
-                            tab_content += '<div role="tabpanel" class="tab-pane" id="ap">';
-                            // tab_content += apTotol(resultSetAPTotal); Commented because permission issue with few roles
-                            tab_content += '</div>';
-                        }
-                    }
 
                     //If role is not a Franchisee
                     if (role != 1000) {
@@ -862,7 +877,7 @@
     /*
         Create MPEX Tab
      */
-    function mpexTab(min_c5, min_dl, min_b4, min_1kg, min_3kg, min_5kg, total_b4, total_c5, total_dl, total_1kg, total_3kg, total_5kg, mpex_drop_notified, serviceContactResult, serviceAddressResult) {
+    function mpexTab(min_c5, min_dl, min_b4, min_1kg, min_3kg, min_5kg, total_b4, total_c5, total_dl, total_1kg, total_3kg, total_5kg, mpex_drop_notified, serviceContactResult, serviceAddressResult, mpex_5kg, mpex_3kg, mpex_1kg, mpex_500g, mpex_b4, mpex_c5, mpex_dl, mpex_5kg_new, mpex_3kg_new, mpex_1kg_new, mpex_500g_new, mpex_b4_new, mpex_c5_new, mpex_dl_new, mpex_start_date, customer_id) {
 
         var inlineQty = '<div class="form-group container company_name_section">';
         inlineQty += '<div class="row">';
@@ -919,6 +934,111 @@
         inlineQty += '</div>';
         inlineQty += '</div>';
 
+        inlineQty += '<div class="form-group container mpex_pricing">';
+        inlineQty += '<div class="row">';
+        inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">MPEX - PRICING STRUCTURE</span></h4></div>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+
+        inlineQty += '<div class="form-group container">';
+        inlineQty += '<div class="row">';
+        inlineQty += '<div class="col-xs-12 heading2"><h5><span class="label label-default col-xs-12" style="background-color: #00808087;">MPEX - CURRENT PRICING STRUCTURE</span></h5></div>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+
+        inlineQty += '<div class="form-group container current_mpex_section">';
+        inlineQty += '<div class="row">';
+        inlineQty += '<div class="col-xs-2 mpex_b4"><div class="input-group"><span class="input-group-addon">B4</span><input class="form-control mpex_b4"  value="' + mpex_b4 + '" readonly /></div></div>';
+        inlineQty += '<div class="col-xs-2 mpex_c5"><div class="input-group"><span class="input-group-addon">C5</span><input class="form-control mpex_c5"  value="' + mpex_c5 + '" readonly /></div></div>';
+        inlineQty += '<div class="col-xs-2 mpex_dl"><div class="input-group"><span class="input-group-addon">DL</span><input class="form-control mpex_dl"  value="' + mpex_dl + '" readonly /></div></div>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+        inlineQty += '<div class="form-group container current_mpex_section">';
+        inlineQty += '<div class="row">';
+        inlineQty += '<div class="col-xs-2 mpex_500g"><div class="input-group"><span class="input-group-addon">500g</span><input" class="form-control mpex_500g"  value="' + mpex_500g + '" readonly /></div></div>';
+        inlineQty += '<div class="col-xs-2 mpex_1kg"><div class="input-group"><span class="input-group-addon">1Kg</span><input class="form-control mpex_1kg"  value="' + mpex_1kg + '" readonly /></div></div>';
+        inlineQty += '<div class="col-xs-2 mpex_3kg"><div class="input-group"><span class="input-group-addon">3Kg</span><input class="form-control mpex_3kg"  value="' + mpex_3kg + '" readonly /></div></div>';
+        inlineQty += '<div class="col-xs-2 mpex_5kg"><div class="input-group"><span class="input-group-addon">5Kg</span><input class="form-control mpex_5kg"  value="' + mpex_5kg + '" readonly /></div></div>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+
+        inlineQty += '<div class="form-group container">';
+        inlineQty += '<div class="row">';
+        inlineQty += '<div class="col-xs-12 heading2"><h5><span class="label label-default col-xs-12" style="background-color: #00808087;">MPEX - SCHEDULED PRICING STRUCTURE</span></h5></div>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+
+        inlineQty += '<div class="form-group container scheduled_mpex_section">';
+        inlineQty += '<div class="row">';
+        inlineQty += '<div class="col-xs-2 mpex_b4_new"><div class="input-group"><span class="input-group-addon">B4</span><input class="form-control mpex_b4_new"  value="' + mpex_b4_new + '" readonly /></div></div>';
+        inlineQty += '<div class="col-xs-2 mpex_c5_new"><div class="input-group"><span class="input-group-addon">C5</span><input class="form-control mpex_c5_new"  value="' + mpex_c5_new + '" readonly /></div></div>';
+        inlineQty += '<div class="col-xs-2 mpex_dl_new"><div class="input-group"><span class="input-group-addon">DL</span><input class="form-control mpex_dl_new"  value="' + mpex_dl_new + '" readonly /></div></div>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+        inlineQty += '<div class="form-group container scheduled_mpex_section">';
+        inlineQty += '<div class="row">';
+        inlineQty += '<div class="col-xs-2 mpex_500g_new"><div class="input-group"><span class="input-group-addon">500g</span><input" class="form-control mpex_500g_new"  value="' + mpex_500g_new + '" readonly /></div></div>';
+        inlineQty += '<div class="col-xs-2 mpex_1kg_new"><div class="input-group"><span class="input-group-addon">1Kg</span><input class="form-control mpex_1kg_new"  value="' + mpex_1kg_new + '" readonly /></div></div>';
+        inlineQty += '<div class="col-xs-2 mpex_3kg_new"><div class="input-group"><span class="input-group-addon">3Kg</span><input class="form-control mpex_3kg_new"  value="' + mpex_3kg_new + '" readonly /></div></div>';
+        inlineQty += '<div class="col-xs-2 mpex_5kg_new"><div class="input-group"><span class="input-group-addon">5Kg</span><input class="form-control mpex_5kg_new"  value="' + mpex_5kg_new + '" readonly /></div></div>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+
+        inlineQty += '<div class="form-group container scheduled_date_section">';
+        inlineQty += '<div class="row">';
+        inlineQty += '<div class="col-xs-4 "></div>';
+        inlineQty += '<div class="col-xs-4 scheduled_date"><div class="input-group"><span class="input-group-addon" id="dropoffdate_text">SCHEDULED DATE</span><input id="scheduled_date" class="form-control scheduled_date"  value="' + mpex_start_date + '" type="date" readonly /></div></div>';
+        inlineQty += '<div class="col-xs-4 "></div>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+
+        inlineQty += '<div class="form-group container mpex_weekly_section">';
+        inlineQty += '<div class="row">';
+        inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">MPEX - WEEKLY USAGE</span></h4></div>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+
+        inlineQty += '<div class="form-group container mpex_weekly_section">';
+        inlineQty += '<div class="row">';
+        inlineQty += '<br><br><style>table#customer_weekly_usage {font-size:12px; font-weight:bold; border-color: #24385b;} </style><table border="0" cellpadding="15" id="customer_weekly_usage" class="tablesorter table table-striped" cellspacing="0" style="width: 50%;margin-left: 25%;"><thead style="color: white;background-color: #607799;"><tr><th style="text-align: center;">WEEK USED</th><th style="text-align: center;">USAGE COUNT</th></tr></thead><tbody>';
+
+        //Search: MPEX Usage - Per Week (Updated Customer)
+        var customerSearch = nlapiLoadSearch('customer', 'customsearch_customer_mpex_weekly_usage');
+
+        var addFilterExpression = new nlobjSearchFilter('internalid', null, 'is', customer_id);
+        customerSearch.addFilter(addFilterExpression);
+
+
+        var resultSetCustomer = customerSearch.runSearch();
+
+
+        resultSetCustomer.forEachResult(function(searchResult) {
+
+            var custid = searchResult.getValue('internalid');
+            var entityid = searchResult.getValue('entityid');
+            var companyname = searchResult.getValue('companyname');
+            var zee = searchResult.getValue('partner');
+            var weeklyUsage = searchResult.getValue('custentity_actual_mpex_weekly_usage');
+
+            var parsedUsage = JSON.parse(weeklyUsage);
+
+            for (var x = 0; x < parsedUsage['Usage'].length; x++) {
+                var parts = parsedUsage['Usage'][x]['Week Used'].split('/');
+
+                inlineQty += '<tr class="dynatable-editable">';
+                inlineQty += '<td>' + parts[2] + '-' + ('0' + parts[1]).slice(-2) + '-' + ('0' + parts[0]).slice(-2) + '</td><td>' + parsedUsage['Usage'][x]['Count'] + '</td>';
+                inlineQty += '</tr>';
+            }
+
+
+            return true;
+        });
+
+        inlineQty += '</tbody>';
+        inlineQty += '</table><br/>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+
 
 
         inlineQty += '<div class="form-group container company_name_section">';
@@ -934,7 +1054,7 @@
         inlineQty += '<div class="col-xs-2 min_dl"><div class="input-group"><span class="input-group-addon" id="min_dl_text">DL (Pieces)</span><input id="min_dl" class="form-control min_dl"  value="' + min_dl + '" data-oldvalue="' + min_dl + '" /></div></div>';
         inlineQty += '<div class="col-xs-2 min_1kg"><div class="input-group"><span class="input-group-addon" id="min_1kg_text">1Kg (Pieces)</span><input id="min_1kg" class="form-control min_1kg"  value="' + min_1kg + '" data-oldvalue="' + min_1kg + '" /></div></div>';
         inlineQty += '<div class="col-xs-2 min_3kg"><div class="input-group"><span class="input-group-addon" id="min_3kg_text">3Kg (Pieces)</span><input id="min_3kg" class="form-control min_3kg"  value="' + min_3kg + '" data-oldvalue="' + min_3kg + '" /></div></div>';
-        inlineQty += '<div class="col-xs-2 min_5kg"><div class="input-group"><span class="input-group-addon" id="min_5kg_text">B4 (Pieces)</span><input id="min_5kg" class="form-control min_5kg"  value="' + min_5kg + '" data-oldvalue="' + min_5kg + '" /></div></div>';
+        inlineQty += '<div class="col-xs-2 min_5kg"><div class="input-group"><span class="input-group-addon" id="min_5kg_text">5Kg (Pieces)</span><input id="min_5kg" class="form-control min_5kg"  value="' + min_5kg + '" data-oldvalue="' + min_5kg + '" /></div></div>';
         inlineQty += '</div>';
         inlineQty += '</div>';
 
