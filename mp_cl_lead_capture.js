@@ -7,7 +7,7 @@
  * Description: Lead Capture /Customer Details - Client     
  * 
  * @Last Modified by:   Ankith
- * @Last Modified time: 2020-04-24 12:06:24
+ * @Last Modified time: 2020-08-25 11:23:47
  *
  */
 
@@ -51,6 +51,27 @@ function pageInit() {
             $('.relocation_section').removeClass('hide');
         }
     }
+
+    AddStyle('https://1048144.app.netsuite.com/core/media/media.nl?id=1988776&c=1048144&h=58352d0b4544df20b40f&_xt=.css', 'head');
+
+    //JQuery to sort table based on click of header. Attached library  
+    jQuery(document).ready(function() {
+        jQuery("#customer_weekly_usage").bind('dynatable:init', function(e, dynatable) {
+            dynatable.sorts.clear();
+            //WS Edit: remove sort
+            dynatable.sorts.add('weekused', -1) // 1=ASCENDING, -1=DESCENDING
+            dynatable.process();
+            e.preventDefault();
+        }).dynatable();
+
+    });
+
+    $('.dynatable-per-page').css('margin-left', '25%')
+    $('.dynatable-record-count').css('margin-left', '25%')
+    $('.dynatable-per-page-select').css('margin-left', '25%')
+    $('#dynatable-search-customer_weekly_usage').css('margin-right', '25%')
+    $('.dynatable-pagination-links').css('margin-right', '25%')
+    $('#dynatable-per-page-customer_weekly_usage').val(10)
 }
 
 //Show Aler message on top of the page with errors
@@ -839,4 +860,31 @@ function getDate() {
     // }
     date = nlapiDateToString(date);
     return date;
+}
+
+/**
+ * [AddJavascript description] - Add the JS to the postion specified in the page.
+ * @param {[type]} jsname [description]
+ * @param {[type]} pos    [description]
+ */
+function AddJavascript(jsname, pos) {
+    var tag = document.getElementsByTagName(pos)[0];
+    var addScript = document.createElement('script');
+    addScript.setAttribute('type', 'text/javascript');
+    addScript.setAttribute('src', jsname);
+    tag.appendChild(addScript);
+}
+
+/**
+ * [AddStyle description] - Add the CSS to the position specified in the page
+ * @param {[type]} cssLink [description]
+ * @param {[type]} pos     [description]
+ */
+function AddStyle(cssLink, pos) {
+    var tag = document.getElementsByTagName(pos)[0];
+    var addLink = document.createElement('link');
+    addLink.setAttribute('type', 'text/css');
+    addLink.setAttribute('rel', 'stylesheet');
+    addLink.setAttribute('href', cssLink);
+    tag.appendChild(addLink);
 }
