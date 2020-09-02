@@ -6,8 +6,8 @@
      *
      * Description: Lead Capture / Customer Details Page        
      * 
-     * @Last Modified by:   Ankith
-     * @Last Modified time: 2020-08-25 11:23:50
+     * @Last Modified by:   ankit
+     * @Last Modified time: 2020-09-02 15:45:58
      *
      */
 
@@ -431,6 +431,7 @@
                 if (!isNullorEmpty(serviceContactResult) && !isNullorEmpty(serviceAddressResult)) {
                     if (serviceContactResult.length > 0 && serviceAddressResult.length > 0) {
                         form.addButton('back', 'SEND EMAIL', 'onclick_SendEmail()');
+                        form.addButton('back', 'SEND REFERRAL EMAIL', 'onclick_SendReferralEmail()');
                     }
                 }
                 form.addButton('back', 'Back', 'onclick_back()');

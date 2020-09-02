@@ -6,8 +6,8 @@
  *
  * Description: Lead Capture /Customer Details - Client     
  * 
- * @Last Modified by:   Ankith
- * @Last Modified time: 2020-08-25 11:23:47
+ * @Last Modified by:   ankit
+ * @Last Modified time: 2020-09-02 15:46:03
  *
  */
 
@@ -278,6 +278,27 @@ function onclick_SendEmail() {
     var params = {
         custid: customer_id,
         sales_record_id: null,
+        id: 'customscript_sl_lead_capture',
+        deploy: 'customdeploy_sl_lead_capture'
+    };
+    params = JSON.stringify(params);
+    var upload_url = baseURL + nlapiResolveURL('suitelet', 'customscript_sl_send_email_module', 'customdeploy_sl_send_email_module') + '&params=' + params;
+    window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
+}
+
+function onclick_SendReferralEmail() {
+    var result = validate();
+    if (result == false) {
+        return false;
+    }
+    customer_id = createUpdateCustomer(customer_id);
+    var params = {
+        custid: customer_id,
+        sales_record_id: null,
+        invitetoportal: null,
+        unity: null,
+        sendinfo: null,
+        referral: 'T',
         id: 'customscript_sl_lead_capture',
         deploy: 'customdeploy_sl_lead_capture'
     };
