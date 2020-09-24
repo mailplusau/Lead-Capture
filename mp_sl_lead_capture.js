@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   ankit
-     * @Last Modified time: 2020-09-02 15:45:58
+     * @Last Modified time: 2020-09-24 12:19:13
      *
      */
 
@@ -461,40 +461,49 @@
                 if (ctx.getUser() != 696992 && auto_allocate == 1 && customer_list != 'T') {
                     //If Customer Status is SUSPECT - Hot Lead
                     if (status_id == '57') {
-                        //Load Franchisee Record
-                        var zeeRecord = nlapiLoadRecord('partner', partner_id);
-                        var salesRep = zeeRecord.getFieldValue('custentity_sales_rep_assigned'); //Franchisee Sales Rep Assigned
 
-                        //Create Sales Record
-                        var recordtoCreate = nlapiCreateRecord('customrecord_sales');
-                        var date2 = new Date();
-                        var subject = '';
-                        var body = '';
+                        //Byron Franchisee
+                        if (partner_id == 794958) {
+                            to = ['niz.ali@mailplus.com.au', 'lee.russell@mailplus.com.au'];
+                            body = 'Dear Lee & Niz, \n \nA HOT Lead has been entered into the System. Please create a Sales Record to assign it to yourself. \n Customer Name: ' + entity_id + ' ' + customer_name + '\nLink: ' + cust_id_link;
+                           
+                            nlapiSendEmail(112209, to, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au']);
+                        } else {
+                            //Load Franchisee Record
+                            var zeeRecord = nlapiLoadRecord('partner', partner_id);
+                            var salesRep = zeeRecord.getFieldValue('custentity_sales_rep_assigned'); //Franchisee Sales Rep Assigned
 
-                        var cust_id_link = 'https://1048144.app.netsuite.com/app/common/entity/custjob.nl?id=' + customer_id;
+                            //Create Sales Record
+                            var recordtoCreate = nlapiCreateRecord('customrecord_sales');
+                            var date2 = new Date();
+                            var subject = '';
+                            var body = '';
 
-                        body = 'New sales record has been created. \n A HOT Lead has been entered into the System. Please respond in an hour. \n Customer Name: ' + entity_id + ' ' + customer_name + '\nLink: ' + cust_id_link;
+                            var cust_id_link = 'https://1048144.app.netsuite.com/app/common/entity/custjob.nl?id=' + customer_id;
 
-                        var userRole = parseInt(nlapiGetContext().getRole());
+                            body = 'New sales record has been created. \n A HOT Lead has been entered into the System. Please respond in an hour. \n Customer Name: ' + entity_id + ' ' + customer_name + '\nLink: ' + cust_id_link;
 
-                        // Set customer, campaign, user, last outcome, callback date
-                        recordtoCreate.setFieldValue('custrecord_sales_customer', customer_id);
-                        recordtoCreate.setFieldValue('custrecord_sales_campaign', 62);
+                            var userRole = parseInt(nlapiGetContext().getRole());
 
-                        recordtoCreate.setFieldValue('custrecord_sales_assigned', salesRep);
-                        nlapiSetFieldValue('salesrep', salesRep);
+                            // Set customer, campaign, user, last outcome, callback date
+                            recordtoCreate.setFieldValue('custrecord_sales_customer', customer_id);
+                            recordtoCreate.setFieldValue('custrecord_sales_campaign', 62);
 
-                        recordtoCreate.setFieldValue('custrecord_sales_outcome', 5);
-                        recordtoCreate.setFieldValue('custrecord_sales_callbackdate', getDate());
-                        recordtoCreate.setFieldValue('custrecord_sales_callbacktime', nlapiDateToString(date2.addHours(0), 'timeofday'));
-                        if (nlapiGetFieldValue('campaign_type') == 56) {
-                            recordtoCreate.setFieldValue('custrecord_sales_followup_stage', 5);
+                            recordtoCreate.setFieldValue('custrecord_sales_assigned', salesRep);
+                            nlapiSetFieldValue('salesrep', salesRep);
+
+                            recordtoCreate.setFieldValue('custrecord_sales_outcome', 5);
+                            recordtoCreate.setFieldValue('custrecord_sales_callbackdate', getDate());
+                            recordtoCreate.setFieldValue('custrecord_sales_callbacktime', nlapiDateToString(date2.addHours(0), 'timeofday'));
+                            if (nlapiGetFieldValue('campaign_type') == 56) {
+                                recordtoCreate.setFieldValue('custrecord_sales_followup_stage', 5);
+                            }
+
+                            nlapiSubmitRecord(recordtoCreate);
+
+                            //Send email to assigned Sales Rep on the Franchisee Record
+                            nlapiSendEmail(112209, salesRep, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au']);
                         }
-
-                        nlapiSubmitRecord(recordtoCreate);
-
-                        //Send email to assigned Sales Rep on the Franchisee Record
-                        nlapiSendEmail(112209, salesRep, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au']);
 
                     } else {
                         //Load Franchisee Record
