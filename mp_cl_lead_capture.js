@@ -7,7 +7,7 @@
  * Description: Lead Capture /Customer Details - Client     
  * 
  * @Last Modified by:   ankit
- * @Last Modified time: 2020-10-06 11:39:33
+ * @Last Modified time: 2020-10-06 12:38:44
  *
  */
 
@@ -18,7 +18,7 @@ if (nlapiGetContext().getEnvironment() == "SANDBOX") {
 }
 
 var ctx = nlapiGetContext();
-var zee = 0;
+var zee = 0; //
 var role = ctx.getRole();
 
 if (role == 1000) { //Franchisee
