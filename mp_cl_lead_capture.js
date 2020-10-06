@@ -7,7 +7,7 @@
  * Description: Lead Capture /Customer Details - Client     
  * 
  * @Last Modified by:   ankit
- * @Last Modified time: 2020-09-02 15:46:03
+ * @Last Modified time: 2020-10-06 11:39:33
  *
  */
 
@@ -171,6 +171,7 @@ $(document).on('click', '#sendemail', function(event) {
     emailBody += 'B4: ' + $('#drop_b4').val() + ' (10-Packs)</br>';
     emailBody += 'C5: ' + $('#drop_c5').val() + ' (10-Packs)</br>';
     emailBody += 'DL: ' + $('#drop_dl').val() + ' (10-Packs)</br>';
+    emailBody += '500G: ' + $('#drop_500g').val() + ' (10-Packs)</br>';
     emailBody += '1KG: ' + $('#drop_1kg').val() + ' (10-Packs)</br>';
     emailBody += '3KG: ' + $('#drop_3kg').val() + ' (10-Packs)</br>';
     emailBody += '5KG: ' + $('#drop_5kg').val() + ' (10-Packs)</br>';
@@ -502,7 +503,6 @@ function validate(status) {
 
 
 
-
     var leadsource = $('#leadsource option:selected').val();
 
     var return_value = true;
@@ -529,7 +529,6 @@ function validate(status) {
     }
 
     var zee = $('#zee option:selected').val();
-
 
 
 
@@ -680,6 +679,9 @@ function createUpdateCustomer(customer_id, update_status, create_contact) {
     if ($('#min_dl').val() != $('#min_dl').attr('data-oldvalue')) {
         update_required = true;
     }
+    if ($('#min_500g').val() != $('#min_500g').attr('data-oldvalue')) {
+        update_required = true;
+    }
     if ($('#min_1kg').val() != $('#min_1kg').attr('data-oldvalue')) {
         update_required = true;
     }
@@ -769,6 +771,7 @@ function createUpdateCustomer(customer_id, update_status, create_contact) {
         customerRecord.setFieldValue('custentity_pmpo_service_time', $('#pmpo_time option:selected').val());
         customerRecord.setFieldValue('custentity_mpex_dl_float', $('#min_b4').val());
         customerRecord.setFieldValue('custentity_mpex_b4_float', $('#min_c5').val());
+        customerRecord.setFieldValue('custentity_mpex_500g_float', $('#min_500g').val());
         customerRecord.setFieldValue('custentity_mpex_1kg_float', $('#min_dl').val());
         customerRecord.setFieldValue('custentity_mpex_c5_float', $('#min_1kg').val());
         customerRecord.setFieldValue('custentity_mpex_3kg_float', $('#min_3kg').val());

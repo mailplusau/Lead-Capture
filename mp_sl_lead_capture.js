@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   ankit
-     * @Last Modified time: 2020-09-25 12:21:16
+     * @Last Modified time: 2020-10-06 12:36:58
      *
      */
 
@@ -170,9 +170,11 @@
                 min_1kg = customer_record.getFieldValue('custentity_mpex_1kg_float'); //Customer Min 1Kg Float
                 min_3kg = customer_record.getFieldValue('custentity_mpex_3kg_float'); //Customer Min 3kg Float
                 min_5kg = customer_record.getFieldValue('custentity_mpex_5kg_float'); //Customer Min 5Kg Float
+                min_500g = customer_record.getFieldValue('custentity_mpex_500g_float'); //Customer Min 500g Float
                 total_1kg = customer_record.getFieldValue('custentity_mpen'); //Customer Total 1Kg Stock at customer location
                 total_3kg = customer_record.getFieldValue('custentity_mpet'); //Customer Total 3Kg Stock at customer location
                 total_5kg = customer_record.getFieldValue('custentity_mpef'); //Customer Total 5Kg Stock at customer location
+                total_500g = customer_record.getFieldValue('custentity_mpeg'); //Customer Total 500g Stock at customer location
                 total_b4 = customer_record.getFieldValue('custentity_mpeb'); //Customer Total B4 Stock at customer location
                 total_c5 = customer_record.getFieldValue('custentity_mpec'); //Customer Total C5 Stock at customer location
                 total_dl = customer_record.getFieldValue('custentity_mped'); //Customer Total DL Stock at customer location
@@ -213,6 +215,9 @@
                 if (isNullorEmpty(min_5kg)) {
                     min_5kg = 0
                 }
+                if (isNullorEmpty(min_500g)) {
+                    min_500g = 0
+                }
 
                 if (isNullorEmpty(total_dl)) {
                     total_dl = 0
@@ -231,6 +236,9 @@
                 }
                 if (isNullorEmpty(total_5kg)) {
                     total_5kg = 0
+                }
+                if (isNullorEmpty(total_500g)) {
+                    total_500g = 0
                 }
 
                 if (multisite == 'T') {
@@ -380,7 +388,7 @@
                     if (customer_status_id == 13 || customer_status_id == 32) {
                         //For the MPEX Tab
                         tab_content += '<div role="tabpanel" class="tab-pane active" id="mpex">';
-                        tab_content += mpexTab(min_c5, min_dl, min_b4, min_1kg, min_3kg, min_5kg, total_b4, total_c5, total_dl, total_1kg, total_3kg, total_5kg, mpex_drop_notified, serviceContactResult, serviceAddressResult, mpex_5kg, mpex_3kg, mpex_1kg, mpex_500g, mpex_b4, mpex_c5, mpex_dl, mpex_5kg_new, mpex_3kg_new, mpex_1kg_new, mpex_500g_new, mpex_b4_new, mpex_c5_new, mpex_dl_new, mpex_start_date, customer_id);
+                        tab_content += mpexTab(min_c5, min_dl, min_b4, min_1kg, min_3kg, min_5kg, min_500g, total_b4, total_c5, total_dl, total_1kg, total_3kg, total_5kg, total_500g, mpex_drop_notified, serviceContactResult, serviceAddressResult, mpex_5kg, mpex_3kg, mpex_1kg, mpex_500g, mpex_b4, mpex_c5, mpex_dl, mpex_5kg_new, mpex_3kg_new, mpex_1kg_new, mpex_500g_new, mpex_b4_new, mpex_c5_new, mpex_dl_new, mpex_start_date, customer_id);
                         tab_content += '</div>';
 
                         //Service Details Tab Contenet
@@ -896,7 +904,7 @@
     /*
         Create MPEX Tab
      */
-    function mpexTab(min_c5, min_dl, min_b4, min_1kg, min_3kg, min_5kg, total_b4, total_c5, total_dl, total_1kg, total_3kg, total_5kg, mpex_drop_notified, serviceContactResult, serviceAddressResult, mpex_5kg, mpex_3kg, mpex_1kg, mpex_500g, mpex_b4, mpex_c5, mpex_dl, mpex_5kg_new, mpex_3kg_new, mpex_1kg_new, mpex_500g_new, mpex_b4_new, mpex_c5_new, mpex_dl_new, mpex_start_date, customer_id) {
+    function mpexTab(min_c5, min_dl, min_b4, min_1kg, min_3kg, min_5kg, min_500g, total_b4, total_c5, total_dl, total_1kg, total_3kg, total_5kg, total_500g, mpex_drop_notified, serviceContactResult, serviceAddressResult, mpex_5kg, mpex_3kg, mpex_1kg, mpex_500g, mpex_b4, mpex_c5, mpex_dl, mpex_5kg_new, mpex_3kg_new, mpex_1kg_new, mpex_500g_new, mpex_b4_new, mpex_c5_new, mpex_dl_new, mpex_start_date, customer_id) {
 
         var inlineQty = '<div class="form-group container company_name_section">';
         inlineQty += '<div class="row">';
@@ -909,6 +917,11 @@
         inlineQty += '<div class="col-xs-2 drop_b4"><div class="input-group"><span class="input-group-addon" id="min_b4_text">B4 (10-Packs)</span><input id="drop_b4" class="form-control drop_b4"  value="2"  /></div></div>';
         inlineQty += '<div class="col-xs-2 drop_c5"><div class="input-group"><span class="input-group-addon" id="drop_c5_text">C5 (10-Packs)</span><input id="drop_c5" class="form-control drop_c5"  value="2"  /></div></div>';
         inlineQty += '<div class="col-xs-2 drop_dl"><div class="input-group"><span class="input-group-addon" id="drop_dl_text">DL (10-Packs)</span><input id="drop_dl" class="form-control drop_dl"  value="2"  /></div></div>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+        inlineQty += '<div class="form-group container entityid_section">';
+        inlineQty += '<div class="row">'
+        inlineQty += '<div class="col-xs-2 drop_500g"><div class="input-group"><span class="input-group-addon" id="drop_dl_text">500g (10-Packs)</span><input id="drop_500g" class="form-control drop_500g"  value="2"  /></div></div>';
         inlineQty += '<div class="col-xs-2 drop_1kg"><div class="input-group"><span class="input-group-addon" id="drop_1kg_text">1Kg (10-Packs)</span><input id="drop_1kg" class="form-control drop_1kg"  value="2"  /></div></div>';
         inlineQty += '<div class="col-xs-2 drop_3kg"><div class="input-group"><span class="input-group-addon" id="drop_3kg_text">3Kg (10-Packs)</span><input id="drop_3kg" class="form-control drop_3kg"  value="2" /></div></div>';
         inlineQty += '<div class="col-xs-2 drop_5kg"><div class="input-group"><span class="input-group-addon" id="drop_5kg_text">5Kg (10-Packs)</span><input id="drop_5kg" class="form-control drop_5kg"  value="2"  /></div></div>';
@@ -1071,6 +1084,11 @@
         inlineQty += '<div class="col-xs-2 min_b4"><div class="input-group"><span class="input-group-addon" id="min_b4_text">B4 (Pieces)</span><input id="min_b4" class="form-control min_b4"  value="' + min_b4 + '" data-oldvalue="' + min_b4 + '" /></div></div>';
         inlineQty += '<div class="col-xs-2 min_c5"><div class="input-group"><span class="input-group-addon" id="min_c5_text">C5 (Pieces)</span><input id="min_c5" class="form-control min_c5"  value="' + min_c5 + '" data-oldvalue="' + min_b4 + '" /></div></div>';
         inlineQty += '<div class="col-xs-2 min_dl"><div class="input-group"><span class="input-group-addon" id="min_dl_text">DL (Pieces)</span><input id="min_dl" class="form-control min_dl"  value="' + min_dl + '" data-oldvalue="' + min_dl + '" /></div></div>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+        inlineQty += '<div class="form-group container entityid_section">';
+        inlineQty += '<div class="row">';
+        inlineQty += '<div class="col-xs-2 min_500g"><div class="input-group"><span class="input-group-addon" id="min_500g_text">500g (Pieces)</span><input id="min_500g" class="form-control min_500g"  value="' + min_500g + '" data-oldvalue="' + min_500g + '" /></div></div>';
         inlineQty += '<div class="col-xs-2 min_1kg"><div class="input-group"><span class="input-group-addon" id="min_1kg_text">1Kg (Pieces)</span><input id="min_1kg" class="form-control min_1kg"  value="' + min_1kg + '" data-oldvalue="' + min_1kg + '" /></div></div>';
         inlineQty += '<div class="col-xs-2 min_3kg"><div class="input-group"><span class="input-group-addon" id="min_3kg_text">3Kg (Pieces)</span><input id="min_3kg" class="form-control min_3kg"  value="' + min_3kg + '" data-oldvalue="' + min_3kg + '" /></div></div>';
         inlineQty += '<div class="col-xs-2 min_5kg"><div class="input-group"><span class="input-group-addon" id="min_5kg_text">5Kg (Pieces)</span><input id="min_5kg" class="form-control min_5kg"  value="' + min_5kg + '" data-oldvalue="' + min_5kg + '" /></div></div>';
@@ -1090,9 +1108,14 @@
         inlineQty += '<div class="col-xs-2 total_b4"><div class="input-group"><span class="input-group-addon" id="min_b4_text">B4 (Pieces) </span><input id="total_b4" class="form-control total_b4" readonly value="' + total_b4 + '" data-oldvalue="' + total_b4 + '" /></div></div>';
         inlineQty += '<div class="col-xs-2 total_c5"><div class="input-group"><span class="input-group-addon" id="total_c5_text">C5 (Pieces)</span><input id="total_c5" class="form-control total_c5" readonly value="' + total_c5 + '" data-oldvalue="' + total_b4 + '" /></div></div>';
         inlineQty += '<div class="col-xs-2 total_dl"><div class="input-group"><span class="input-group-addon" id="total_dl_text">DL (Pieces)</span><input id="total_dl" class="form-control total_dl"readonly  value="' + total_dl + '" data-oldvalue="' + total_dl + '" /></div></div>';
+        inlineQty += '</div>';
+        inlineQty += '</div>';
+        inlineQty += '<div class="form-group container entityid_section">';
+        inlineQty += '<div class="row">';
+        inlineQty += '<div class="col-xs-2 total_500g"><div class="input-group"><span class="input-group-addon" id="total_500g_text">500g (Pieces) </span><input id="total_500g" class="form-control total_500g" readonly value="' + total_500g + '" data-oldvalue="' + total_500g + '" /></div></div>';
         inlineQty += '<div class="col-xs-2 total_1kg"><div class="input-group"><span class="input-group-addon" id="total_1kg_text">1Kg (Pieces) </span><input id="total_1kg" class="form-control total_1kg" readonly value="' + total_1kg + '" data-oldvalue="' + total_1kg + '" /></div></div>';
         inlineQty += '<div class="col-xs-2 total_3kg"><div class="input-group"><span class="input-group-addon" id="total_3kg_text">3Kg (Pieces) </span><input id="total_3kg" class="form-control total_3kg" readonly value="' + total_3kg + '" data-oldvalue="' + total_3kg + '" /></div></div>';
-        inlineQty += '<div class="col-xs-2 total_5kg"><div class="input-group"><span class="input-group-addon" id="total_5kg_text">B4 (Pieces)</span><input id="total_5kg" class="form-control total_5kg" readonly value="' + total_5kg + '" data-oldvalue="' + total_5kg + '" /></div></div>';
+        inlineQty += '<div class="col-xs-2 total_5kg"><div class="input-group"><span class="input-group-addon" id="total_5kg_text">5Kg (Pieces)</span><input id="total_5kg" class="form-control total_5kg" readonly value="' + total_5kg + '" data-oldvalue="' + total_5kg + '" /></div></div>';
         inlineQty += '</div>';
         inlineQty += '</div>';
 
