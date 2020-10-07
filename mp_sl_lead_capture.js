@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   ankit
-     * @Last Modified time: 2020-10-06 12:36:58
+     * @Last Modified time: 2020-10-07 12:14:36
      *
      */
 
@@ -472,6 +472,7 @@
 
                         //Byron Franchisee
                         if (partner_id == 794958) {
+                            var cust_id_link = 'https://1048144.app.netsuite.com/app/common/entity/custjob.nl?id=' + customer_id;
                             to = ['niz.ali@mailplus.com.au', 'lee.russell@mailplus.com.au'];
                             body = 'Dear Lee & Niz, \n \nA HOT Lead has been entered into the System. Please create a Sales Record to assign it to yourself. \n Customer Name: ' + entity_id + ' ' + customer_name + '\nLink: ' + cust_id_link;
 
@@ -519,6 +520,7 @@
                         var salesRep = zeeRecord.getFieldValue('custentity_sales_rep_assigned');
 
                         if (partner_id == 794958) {
+                            var cust_id_link = 'https://1048144.app.netsuite.com/app/common/entity/custjob.nl?id=' + customer_id;
                             to = ['niz.ali@mailplus.com.au', 'lee.russell@mailplus.com.au'];
                             body = 'Dear Lee & Niz, \n \nA HOT Lead has been entered into the System. Please create a Sales Record to assign it to yourself. \n Customer Name: ' + entity_id + ' ' + customer_name + '\nLink: ' + cust_id_link;
 
@@ -1382,7 +1384,7 @@
         } else {
             inlineQty += '<div class="form-group container auto_allocate">';
             inlineQty += '<div class="row">';
-            inlineQty += '<div class="col-xs-6 auto_allocate_div"><div class="input-group"><span class="input-group-addon" id="auto_allocate_text">AUTO ALLOCATE</span><select id="auto_allocate" class="form-control auto_allocate" disabled><option value="' + 1 + '">YES</option><option value="' + 2 + '" selected>NO</option></select></div></div>';
+            inlineQty += '<div class="col-xs-6 auto_allocate_div"><div class="input-group"><span class="input-group-addon" id="auto_allocate_text">AUTO ALLOCATE</span><select id="auto_allocate" class="form-control auto_allocate" disabled><option value="' + 1 + '" selected>YES</option><option value="' + 2 + '" >NO</option></select></div></div>';
             inlineQty += '</div>';
             inlineQty += '</div>';
         }
