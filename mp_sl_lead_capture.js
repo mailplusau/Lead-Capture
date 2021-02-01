@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   ankit
-     * @Last Modified time: 2020-11-11 16:46:13
+     * @Last Modified time: 2021-01-19 09:02:17
      *
      */
 
@@ -466,7 +466,7 @@
             //If Customer status not Customer - Signed
             if (customer_status_id != 13) {
                 //If User is not Raine OR Auto Allocate is set to YES OR Not coming from the Customer List Page
-                if (ctx.getUser() != 696992 && auto_allocate == 1 && customer_list != 'T') {
+                if (ctx.getUser() != 696992 && ctx.getUser() != 1154991 && auto_allocate == 1 && customer_list != 'T') {
                     //If Customer Status is SUSPECT - Hot Lead
                     if (status_id == '57') {
 
