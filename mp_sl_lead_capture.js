@@ -7,7 +7,7 @@
      * Description: Lead Capture / Customer Details Page        
      * 
      * @Last Modified by:   ankit
-     * @Last Modified time: 2021-01-19 09:02:17
+     * @Last Modified time: 2021-03-02 11:50:45
      *
      */
 
@@ -466,7 +466,7 @@
             //If Customer status not Customer - Signed
             if (customer_status_id != 13) {
                 //If User is not Raine OR Auto Allocate is set to YES OR Not coming from the Customer List Page
-                if (ctx.getUser() != 696992 && ctx.getUser() != 1154991 && auto_allocate == 1 && customer_list != 'T') {
+                if (ctx.getUser() != 696992 && ctx.getUser() != 1132504 && auto_allocate == 1 && customer_list != 'T') {
                     //If Customer Status is SUSPECT - Hot Lead
                     if (status_id == '57') {
 
@@ -484,7 +484,7 @@
                             to = ['lee.russell@mailplus.com.au', 'kerina.helliwell@mailplus.com.au'];
                             body = 'Dear Lee & Kerina, \n \nA HOT Lead has been entered into the System. Please create a Sales Record to assign it to yourself. \n Customer Name: ' + entity_id + ' ' + customer_name + '\nLink: ' + cust_id_link;
 
-                            nlapiSendEmail(112209, to, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au', 'gabrielle.bathman@mailplus.com.au']);
+                            nlapiSendEmail(112209, to, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au', 'rianne.mansell@mailplus.com.au']);
                         } else {
                             //Load Franchisee Record
                             var zeeRecord = nlapiLoadRecord('partner', partner_id);
@@ -519,7 +519,7 @@
                             nlapiSubmitRecord(recordtoCreate);
 
                             //Send email to assigned Sales Rep on the Franchisee Record
-                            nlapiSendEmail(112209, salesRep, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au', 'gabrielle.bathman@mailplus.com.au']);
+                            nlapiSendEmail(112209, salesRep, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au', 'rianne.mansell@mailplus.com.au']);
                         }
 
                     } else {
@@ -533,7 +533,7 @@
                             to = ['lee.russell@mailplus.com.au'];
                             body = 'Dear Lee & Niz, \n \nA HOT Lead has been entered into the System. Please create a Sales Record to assign it to yourself. \n Customer Name: ' + entity_id + ' ' + customer_name + '\nLink: ' + cust_id_link;
 
-                            nlapiSendEmail(112209, to, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au', 'gabrielle.bathman@mailplus.com.au']);
+                            nlapiSendEmail(112209, to, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au', 'rianne.mansell@mailplus.com.au']);
                         } else if (partner_id == 452187 || partner_id == 92250 || partner_id == 433571 || partner_id == 5377 || partner_id == 490139 || partner_id == 280474 || partner_id == 490140) {
                             /*  Belmont
                                 Canning Vale
@@ -548,7 +548,7 @@
                             to = ['lee.russell@mailplus.com.au', 'kerina.helliwell@mailplus.com.au'];
                             body = 'Dear Lee & Kerina, \n \nA HOT Lead has been entered into the System. Please create a Sales Record to assign it to yourself. \n Customer Name: ' + entity_id + ' ' + customer_name + '\nLink: ' + cust_id_link;
 
-                            nlapiSendEmail(112209, to, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au', 'gabrielle.bathman@mailplus.com.au']);
+                            nlapiSendEmail(112209, to, 'Sales HOT Lead - ' + entity_id + ' ' + customer_name, body, ['luke.forbes@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'raine.giderson@mailplus.com.au', 'belinda.urbani@mailplus.com.au', 'rainne.mansell@mailplus.com.au']);
                         } else {
                             //Create Sales Record
                             var recordtoCreate = nlapiCreateRecord('customrecord_sales');
