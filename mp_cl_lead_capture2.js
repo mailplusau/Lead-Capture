@@ -5,7 +5,7 @@
  * @Date:   2021-09-15T16:59:52+10:00
  * @Filename: mp_cl_lead_capture2.js
  * @Last modified by:   ankithravindran
- * @Last modified time: 2021-11-05T07:02:53+11:00
+ * @Last modified time: 2022-05-06T08:38:25+10:00
  */
 
 
@@ -475,8 +475,9 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
             });
             var disabled = (data[7] == selector_id) ? 'disabled' :
               '';
-            return '<button class="btn btn-success add_inv glyphicon glyphicon-plus" type="button" data-inv-id="' +
-            data[7] +
+            return
+              '<button class="btn btn-success add_inv glyphicon glyphicon-plus" type="button" data-inv-id="' +
+              data[7] +
               '" data-toggle="tooltip" data-placement="right" title="Attach to email" ' +
               disabled + '></button>';
           }
@@ -597,7 +598,8 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
           var invoice_link = baseURL +
             '/app/accounting/transactions/custinvc.nl?id=' + invoice_id +
             '&compid=' + compid + '&cf=116&whence=';
-          invoice_number = '<a href="' + invoice_link + '">' +
+          invoice_number = '<a href="' + invoice_link +
+            '" target="_blank">' +
             invoice_number + '</a>';
 
           var status_text = invoiceResult.getText('statusref');
