@@ -80,7 +80,7 @@ define(
 
                 } else if (isNullorEmpty(context.request.parameters.zee)) {
                     var form = ui.createForm({
-                        title: 'New Leads Overview'
+                        title: 'New Website Leads Overview'
                     });
                 } else {
                     var partner_record = record.load({

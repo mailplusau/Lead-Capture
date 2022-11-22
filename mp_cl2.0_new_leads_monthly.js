@@ -332,6 +332,19 @@ Starshipit integration	6
                     name: 'custentity_date_lead_entered',
                     summary: 'GROUP'
                 });
+
+                var dateLeadEnteredArray = dateLeadEnteredMonthly.split('/');
+
+                if (parseInt(dateLeadEnteredArray[1]) < 10) {
+                    dateLeadEnteredArray[1] = '0' + dateLeadEnteredArray[1]
+                }
+
+                if (parseInt(dateLeadEnteredArray[0]) < 10) {
+                    dateLeadEnteredArray[0] = '0' + dateLeadEnteredArray[0]
+                }
+
+                var dateLeadEnteredFormatted = dateLeadEnteredArray[2] + '-' + dateLeadEnteredArray[1] + '-' + dateLeadEnteredArray[0]
+
                 var leadCount = parseInt(websiteNewLeadsMonthlyResult.getValue({
                     name: 'internalid',
                     summary: 'COUNT'
@@ -368,7 +381,7 @@ Starshipit integration	6
                     total_leads = customer_signed + suspect_customer_lost + suspect_hot_lead + suspect_lost + suspect_reassign + suspect_off_peak_pipeline + suspect_new
 
                 } else if (old_date != null &&
-                    old_date == dateLeadEnteredMonthly) {
+                    old_date == dateLeadEnteredFormatted) {
                     if (leadStatus == 13) { //Customer - Signed
                         customer_signed += leadCount
                     } else if (leadStatus == 22) { //Suspect - Customer - Lost
@@ -388,7 +401,7 @@ Starshipit integration	6
                     total_leads = customer_signed + suspect_customer_lost + suspect_hot_lead + suspect_lost + suspect_reassign + suspect_off_peak_pipeline + suspect_new;
 
                 } else if (old_date != null &&
-                    old_date != dateLeadEnteredMonthly) {
+                    old_date != dateLeadEnteredFormatted) {
 
                     preview_set.push({
                         dateLeadEntered: old_date,
@@ -432,7 +445,7 @@ Starshipit integration	6
 
                 }
 
-                old_date = dateLeadEnteredMonthly;
+                old_date = dateLeadEnteredFormatted;
                 count++;
                 return true;
             });
@@ -541,6 +554,18 @@ Starshipit integration	6
                     summary: 'GROUP'
                 });
 
+                var dateLeadEnteredSalesRepArray = dateLeadEnteredBySalesRep.split('/');
+
+                if (parseInt(dateLeadEnteredSalesRepArray[1]) < 10) {
+                    dateLeadEnteredSalesRepArray[1] = '0' + dateLeadEnteredSalesRepArray[1]
+                }
+
+                if (parseInt(dateLeadEnteredSalesRepArray[0]) < 10) {
+                    dateLeadEnteredSalesRepArray[0] = '0' + dateLeadEnteredSalesRepArray[0]
+                }
+
+                var dateLeadEnteredSalesRepFormatted = dateLeadEnteredSalesRepArray[2] + '-' + dateLeadEnteredSalesRepArray[1] + '-' + dateLeadEnteredSalesRepArray[0]
+
                 var leadCountBySalesRep = parseInt(websiteNewLeadsBySalesRepSearchResult.getValue({
                     name: 'internalid',
                     summary: 'COUNT'
@@ -575,7 +600,7 @@ Starshipit integration	6
                     total_sales_rep_leads = kerina_sales_rep + david_sales_rep + lee_sales_rep + belinda_sales_rep + others_sales_rep
 
                 } else if (old_sales_rep_date_entered != null &&
-                    old_sales_rep_date_entered == dateLeadEnteredBySalesRep) {
+                    old_sales_rep_date_entered == dateLeadEnteredSalesRepFormatted) {
                     if (salesRepAssignedId == 696160) { //Sales Rep - Kerina
                         kerina_sales_rep += leadCountBySalesRep
                     } else if (salesRepAssignedId == 690145) { //Sales Rep - David
@@ -591,7 +616,7 @@ Starshipit integration	6
                     total_sales_rep_leads = kerina_sales_rep + david_sales_rep + lee_sales_rep + belinda_sales_rep + others_sales_rep
 
                 } else if (old_sales_rep_date_entered != null &&
-                    old_sales_rep_date_entered != dateLeadEnteredBySalesRep) {
+                    old_sales_rep_date_entered != dateLeadEnteredSalesRepFormatted) {
 
                     salesRep_set.push({
                         dateLeadEntered: old_sales_rep_date_entered,
@@ -627,7 +652,7 @@ Starshipit integration	6
 
                 }
 
-                old_sales_rep_date_entered = dateLeadEnteredBySalesRep;
+                old_sales_rep_date_entered = dateLeadEnteredSalesRepFormatted;
                 count_sales_rep++;
                 return true;
             });
@@ -678,6 +703,18 @@ Starshipit integration	6
                     summary: 'GROUP'
                 });
 
+                var dateLeadEnteredServiceArray = dateLeadEnteredByService.split('/');
+
+                if (parseInt(dateLeadEnteredServiceArray[1]) < 10) {
+                    dateLeadEnteredServiceArray[1] = '0' + dateLeadEnteredServiceArray[1]
+                }
+
+                if (parseInt(dateLeadEnteredServiceArray[0]) < 10) {
+                    dateLeadEnteredServiceArray[0] = '0' + dateLeadEnteredServiceArray[0]
+                }
+
+                var dateLeadEnteredServiceFormatted = dateLeadEnteredServiceArray[2] + '-' + dateLeadEnteredServiceArray[1] + '-' + dateLeadEnteredServiceArray[0]
+
                 var serviceOfInterestId = websiteNewLeadsByServiceOfInterestSearchResult.getValue({
                     name: 'custentity_services_of_interest',
                     summary: 'GROUP'
@@ -726,7 +763,7 @@ Starshipit integration	6
                     total_service_leads = service_mpex + service_po + service_bio + service_api + service_std + service_starshipit
 
                 } else if (old_service_date_entered != null &&
-                    old_service_date_entered == dateLeadEnteredByService) {
+                    old_service_date_entered == dateLeadEnteredServiceFormatted) {
 
                     if (serviceOfInterestId == 1) {
                         service_mpex = leadCountByServices
@@ -744,7 +781,7 @@ Starshipit integration	6
                     total_service_leads = service_mpex + service_po + service_bio + service_api + service_std + service_starshipit
 
                 } else if (old_service_date_entered != null &&
-                    old_service_date_entered != dateLeadEnteredByService) {
+                    old_service_date_entered != dateLeadEnteredServiceFormatted) {
 
                     service_set.push({
                         dateLeadEnteredByService: old_service_date_entered,
@@ -785,7 +822,7 @@ Starshipit integration	6
 
                 }
 
-                old_service_date_entered = dateLeadEnteredByService;
+                old_service_date_entered = dateLeadEnteredServiceFormatted;
                 count_service++;
                 return true;
             });
