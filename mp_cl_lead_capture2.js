@@ -5,15 +5,15 @@
  * @Date:   2021-09-15T16:59:52+10:00
  * @Filename: mp_cl_lead_capture2.js
  * @Last modified by:   ankithravindran
- * @Last modified time: 2022-05-06T08:38:25+10:00
+ * @Last modified time: 2021-11-05T07:02:53+11:00
  */
 
 
 
 define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
-    'N/email', 'N/currentRecord'
-  ],
-  function(error, runtime, search, url, record, format, email, currentRecord) {
+  'N/email', 'N/currentRecord'
+],
+  function (error, runtime, search, url, record, format, email, currentRecord) {
     var baseURL = 'https://1048144.app.netsuite.com';
     if (runtime.EnvType == "SANDBOX") {
       baseURL = 'https://1048144-sb3.app.netsuite.com';
@@ -63,7 +63,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       }
       if (role != 1000) {
         if ($('#leadsource option:selected').val() == 202599 || $(
-            '#leadsource option:selected').val() == 217602) { //Relocation or COE
+          '#leadsource option:selected').val() == 217602) { //Relocation or COE
           $('.relocation_section').removeClass('hide');
         }
       }
@@ -73,7 +73,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
         'head');
 
       //JQuery to sort table based on click of header. Attached library
-      $(document).ready(function() {
+      $(document).ready(function () {
         var customer_weekly_usage = $("#customer_weekly_usage").DataTable();
       });
 
@@ -82,21 +82,21 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       /**
        * Show the tabs content on click of a tab
        */
-      $(".nav-tabs").on("click", "a", function(e) {
+      $(".nav-tabs").on("click", "a", function (e) {
         $(this).tab('show');
       });
 
       /**
        * Close the Alert box on click
        */
-      $(document).on('click', '#alert .close', function(e) {
+      $(document).on('click', '#alert .close', function (e) {
         $(this).parent().hide();
       });
 
       /**
        * On change of Using Mail / Parcels / Satchels Regularly?
        */
-      $(document).on('change', '#survey1', function(e) {
+      $(document).on('change', '#survey1', function (e) {
         if ($('#survey1 option:selected').val() == 2) {
           $('#survey2').val(2);
           $('#survey2').hide()
@@ -124,7 +124,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       /**
        * On change of Franchisee
        */
-      $(document).on("change", ".zee_dropdown", function(e) {
+      $(document).on("change", ".zee_dropdown", function (e) {
         var zee = $(this).val();
         $('#hiddenzee').val(zee);
         var url = baseURL +
@@ -136,7 +136,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       /**
        * On change of Lead Source
        */
-      $(document).on("change", "#leadsource", function(e) {
+      $(document).on("change", "#leadsource", function (e) {
         var lead_source = $('#leadsource option:selected').val();
         console.log('lead_source', lead_source);
         if (lead_source == 202599 || lead_source == 217602) { //Relocation
@@ -151,7 +151,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       /**
        * On click of Notify Franchisee
        */
-      $(document).on('click', '#sendemail', function(event) {
+      $(document).on('click', '#sendemail', function (event) {
 
 
         var recCustomer = record.load({
@@ -252,7 +252,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       /**
        * On Click of Add/Edit Contacts
        */
-      $(document).on('click', '#reviewcontacts', function(event) {
+      $(document).on('click', '#reviewcontacts', function (event) {
 
         var result = validate('true');
         if (result == false) {
@@ -297,11 +297,45 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
 
       });
 
+      $(document).on('click', '#reviewprodpricing', function (event) {
+
+        var result = validate('true');
+        if (result == false) {
+          return false;
+        }
+        customer_id = createUpdateCustomer(customer_id, null, true);
+
+        var url = nlapiResolveURL('SUITELET', 'customscript_sl2_prod_pricing_page', 'customdeploy1');
+        url += '&customerid=' + parseInt(customer_id);
+
+        window.open(url, "_self",
+          "height=750,width=650,modal=yes,alwaysRaised=yes");
+
+      });
+
+      $(document).on('click', '#updateServiceFinancialTab', function (event) {
+
+        var result = validate('true');
+        if (result == false) {
+          return false;
+        }
+        customer_id = createUpdateCustomer(customer_id, null, true);
+
+        var params = {
+          custid: customer_id,
+          servicechange: 1
+        }
+        params = JSON.stringify(params);
+
+        var upload_url = baseURL + nlapiResolveURL('SUITELET', 'customscript_sl_smc_main', 'customdeploy_sl_smc_main') + '&unlayered=T&custparam_params=' + params;
+        window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
+
+      });
 
       /**
        * On click of Add/Edit Address
        */
-      $(document).on('click', '#reviewaddress', function(event) {
+      $(document).on('click', '#reviewaddress', function (event) {
 
         var result = validate();
         if (result == false) {
@@ -348,7 +382,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       /**
        * On change of Old Customer ID
        */
-      $(document).on('change', '#old_cust', function() {
+      $(document).on('change', '#old_cust', function () {
 
         var old_zee = search.lookupFields({
           type: search.Type.CUSTOMER,
@@ -371,7 +405,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       /**
        * On click of Create User Note
        */
-      $(document).on('click', '#create_note', function(event) {
+      $(document).on('click', '#create_note', function (event) {
 
         var result = validate('true');
         if (result == false) {
@@ -408,7 +442,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
 
       });
 
-      $("textarea").keydown(function(event) {
+      $("textarea").keydown(function (event) {
         console.log(event.keyCode)
         if (event.keyCode == 13) {
           event.preventDefault();
@@ -468,15 +502,14 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
         }, {
           targets: -1,
           data: null,
-          render: function(data, type, row, meta) {
+          render: function (data, type, row, meta) {
             var val1 = currentRecord.get();
             var selector_id = val1.getValue({
               fieldId: 'custpage_selector_id',
             });
             var disabled = (data[7] == selector_id) ? 'disabled' :
               '';
-            return
-              '<button class="btn btn-success add_inv glyphicon glyphicon-plus" type="button" data-inv-id="' +
+            return '<button class="btn btn-success add_inv glyphicon glyphicon-plus" type="button" data-inv-id="' +
               data[7] +
               '" data-toggle="tooltip" data-placement="right" title="Attach to email" ' +
               disabled + '></button>';
@@ -490,12 +523,12 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       // Adds a row to the table head row, and adds search filters to each column.
       $('#invoices-preview thead tr').clone(true).appendTo(
         '#invoices-preview thead');
-      $('#invoices-preview thead tr:eq(1) th').each(function(i) {
+      $('#invoices-preview thead tr:eq(1) th').each(function (i) {
         var title = $(this).text();
         $(this).html('<input type="text" placeholder="Search ' + title +
           '" />');
 
-        $('input', this).on('keyup change', function() {
+        $('input', this).on('keyup change', function () {
           if (invoice_table.column(i).search() !== this.value) {
             invoice_table
               .column(i)
@@ -506,7 +539,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       });
 
       updateInvoicesDatatable();
-      $('#invoices_dropdown').change(function() {
+      $('#invoices_dropdown').change(function () {
         var invoice_status_filter = $(this, 'option:selected').val();
         if (invoice_status_filter == 'open') {
           var invoice_section_header = 'OPEN INVOICES';
@@ -531,7 +564,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       $('#alert').show();
       document.body.scrollTop = 0; // For Safari
       document.documentElement.scrollTop = 0;
-      setTimeout(function() {
+      setTimeout(function () {
         $("#alert .close").trigger('click');
       }, 100000);
     }
@@ -581,7 +614,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       }
 
       var today = new Date;
-      invoicesSearchResults.each(function(invoiceResult) {
+      invoicesSearchResults.each(function (invoiceResult) {
 
         var status = invoiceResult.getValue('statusref');
 
@@ -598,8 +631,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
           var invoice_link = baseURL +
             '/app/accounting/transactions/custinvc.nl?id=' + invoice_id +
             '&compid=' + compid + '&cf=116&whence=';
-          invoice_number = '<a href="' + invoice_link +
-            '" target="_blank">' +
+          invoice_number = '<a href="' + invoice_link + '" target="_blank">' +
             invoice_number + '</a>';
 
           var status_text = invoiceResult.getText('statusref');
@@ -965,7 +997,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       console.log("valid customer id");
 
       if ($('#leadsource option:selected').val() == 202599 || $(
-          '#leadsource option:selected').val() == 217602) {
+        '#leadsource option:selected').val() == 217602) {
         console.log('old_cust', $('#old_cust').val());
         var old_customer_record = record.load({
           type: record.Type.CUSTOMER,
@@ -1006,8 +1038,11 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       var daytodayphone = $('#daytodayphone').val();
       var industry = $('#industry option:selected').val();
       var leadsource = $('#leadsource option:selected').val();
+      var account_manager = $('#account_manager option:selected').val();
       var return_value = true;
-      var alertMessage = ''
+      var alertMessage = '';
+
+      console.log('accouint manager: ' + account_manager)
 
       if (isNullorEmpty(companyName)) {
         alertMessage += 'Please Enter the Company Name</br>';
@@ -1025,6 +1060,11 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
 
       if (isNullorEmpty(leadsource)) {
         alertMessage += 'Please Select an Lead Source</br>';
+        return_value = false;
+      }
+
+      if (isNullorEmpty(account_manager)) {
+        alertMessage += 'Please Select an Account Manager</br>';
         return_value = false;
       }
       var zee = $('#zee option:selected').val();
@@ -1157,7 +1197,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       }
 
       if ($('#old_zee option:selected').val() != $('#old_zee').attr(
-          'data-oldvalue')) {
+        'data-oldvalue')) {
         update_required = true;
       }
       if ($('#old_cust').val() != $('#old_cust').attr('data-oldvalue')) {
@@ -1171,19 +1211,19 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
         update_required = true;
       }
       if ($('#account_email').val() != $('#account_email').attr(
-          'data-oldvalue')) {
+        'data-oldvalue')) {
         update_required = true;
       }
       if ($('#account_phone').val() != $('#account_phone').attr(
-          'data-oldvalue')) {
+        'data-oldvalue')) {
         update_required = true;
       }
       if ($('#daytodayemail').val() != $('#daytodayemail').attr(
-          'data-oldvalue')) {
+        'data-oldvalue')) {
         update_required = true;
       }
       if ($('#daytodayphone').val() != $('#daytodayphone').attr(
-          'data-oldvalue')) {
+        'data-oldvalue')) {
         update_required = true;
       }
       if (!isNullorEmpty($('#zee_notes').val())) {
@@ -1417,6 +1457,14 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
           fieldId: 'leadsource',
           value: $('#leadsource option:selected').val()
         });
+
+        console.log('Account Manager: ' + $('#account_manager option:selected').val())
+
+        customerRecord.setValue({
+          fieldId: 'custentity_mp_toll_salesrep',
+          value: $('#account_manager option:selected').val()
+        });
+
         console.log($('#leadsource option:selected').val());
         if (role == 1032) {
           customerRecord.setValue({
@@ -1539,6 +1587,14 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
         }
 
 
+        if (!isNullorEmpty($('#mp_weekly_usage_dropdown').val())) {
+          customerRecord.setValue({
+            fieldId: 'custentity_form_mpex_usage_per_week',
+            value: $('#mp_weekly_usage_dropdown').val()
+          });
+        }
+
+
         var customerRecordId = customerRecord.save({
           ignoreMandatoryFields: true
         });
@@ -1631,7 +1687,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
       }
       var weights = [10, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
         checksum = str.split('').map(Number).reduce(
-          function(total, digit, index) {
+          function (total, digit, index) {
             if (!index) {
               digit--;
             }
@@ -1707,7 +1763,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format',
      * @returns {String} The same number, formatted in Australian dollars.
      */
     function financial(x) {
-      if (typeof(x) === 'string') {
+      if (typeof (x) === 'string') {
         x = parseFloat(x);
       }
       if (isNullorEmpty(x)) {
