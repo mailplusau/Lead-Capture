@@ -606,6 +606,8 @@ function main(request, response) {
                     nlapiSubmitRecord(recCustomer_portalaccess);
                 }
 
+                nlapiSendEmail(author, recipient, "subject", "body", "cc", "bcc", records, attachments, notifySenderOnBounce, internalOnly, "replyTo");
+
                 nlapiSendEmail(1132504, ['mailplussupport@protechly.com'], email_subject, email_body, ['raine.giderson@mailplus.com.au', 'ankith.ravindran@mailplus.com.au', 'rianne.mansell@mailplus.com.au', 'fiona.harrison@mailplus.com.au'], records, null, true)
 
                 /**
